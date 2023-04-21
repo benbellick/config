@@ -46,8 +46,8 @@
   (activate-input-method "TeX") ;; the input method has to be triggered for `quail-package-alist' to be non-nil
   (let ((quail-current-package (assoc "TeX" quail-package-alist)))
    (quail-define-rules ((append . t))
-		       ("\\llbracket" ?〚)
-		       ("\\rrbracket" ?〛)
+		       ("\\llbracket" ?⟦)
+		       ("\\rrbracket" ?⟧)
 		       ("\\varV" ?𝒱)
 		       ("\\varE" ?ℰ)
 		       )))
