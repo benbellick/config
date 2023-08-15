@@ -11,7 +11,7 @@
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(rust-mode lsp-ui lsp-haskell lsp-mode ement yaml-mode typescript-mode tuareg project elfeed-org elfeed org-ref ivy-bibtex math-symbol-lists markdown-mode elpy haskell-mode))
+   '(rust-mode lsp-ui lsp-haskell lsp-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode))
  '(safe-local-variable-values '((eval turn-off-auto-fill))))
 
 ;; move file backups into different directory
@@ -81,14 +81,6 @@
 (add-hook 'org-mode-hook
    (lambda ()
      (set-input-method 'TeX))) ;; use TeX input mode in Org-mode
-
-;; Setup org-ref mode
-(setq bibtex-completion-bibliography '("~/coding/notes/research/master.bib")
-      bibtex-completion-library-path '("~/coding/notes/research/pdfs/")
-      bibtex-completion-notes-path "~/coding/notes/research/notes.org")
-(require 'org-ref)
-(require 'org-ref-ivy)
-
 
 ;; Setup Ocaml-mode
 (add-to-list 'load-path "~/.opam/default/share/emacs/site-lisp") ;;ocp-indent
