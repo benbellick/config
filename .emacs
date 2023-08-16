@@ -11,7 +11,7 @@
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(rust-mode lsp-ui lsp-haskell lsp-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode))
+   '(eglot rust-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode))
  '(safe-local-variable-values '((eval turn-off-auto-fill))))
 
 ;; move file backups into different directory
@@ -41,8 +41,6 @@
 ;; haskell-mode configuration
 (setq haskell-font-lock-symbols t) ; display as unicode
 (setq haskell-tags-on-save t) ; Use hasktags on save
-(add-hook 'haskell-mode-hook #'lsp)
-(add-hook 'haskell-literate-mode-hook #'lsp)
 
 ;; agda-mode configuration
 (load-file (let ((coding-system-for-read 'utf-8))
