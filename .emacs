@@ -4,15 +4,25 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(TeX-view-program-selection
+   '((output-dvi "open")
+     (output-pdf "PDF Tools")
+     (output-html "open")))
+ '(confirm-kill-emacs 'yes-or-no-p)
  '(css-indent-offset 2)
+ '(custom-enabled-themes '(leuven-dark))
  '(haskell-process-log t)
  '(org-hide-emphasis-markers t)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(eglot rust-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode))
+   '(auctex org-bullets pdf-tools eglot rust-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode magit))
+ '(revert-buffer-quick-short-answers t)
  '(safe-local-variable-values '((eval turn-off-auto-fill))))
+
+(menu-bar-mode -1)
+(windmove-default-keybindings)
 
 ;; move file backups into different directory
 (setq
@@ -25,6 +35,8 @@
    version-control t)       ; use versioned backups
 
 (setq create-lockfiles nil)
+(setq auto-save-file-name-transforms
+  `((".*" "~/.emacs.d/.saves/" t)))
 
 ;; line numbers
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
@@ -33,7 +45,14 @@
 (require 'whitespace)
 (setq whitespace-style '(face lines-tail))
 (setq whitespace-line-column 80)
-(global-whitespace-mode t)
+(add-hook 'prog-mode-hook 'whitespace-mode)
+
+
+;; flymake keybindings
+(with-eval-after-load "flymake"
+  (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
+  (define-key flymake-mode-map (kbd "M-p") 'flymake-goto-prev-error)
+  (define-key flymake-mode-map (kbd "M-s") 'flymake-show-project-diagnostics))
 
 ;; markdown-mode configuration
 (setq markdown-fontify-code-blocks-natively t) ; syntax highlight codeblocks
@@ -56,8 +75,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(highlight ((t (:background "brightblack" :foreground "magenta"))))
- '(italic ((t (:strike-through t :underline "cyan" :slant italic)))))
+ '(highlight ((t (:background "brightblack" :foreground "magenta")))))
 
 (add-hook 'agda2-mode-hook
   (lambda ()
@@ -79,6 +97,15 @@
 (add-hook 'org-mode-hook
    (lambda ()
      (set-input-method 'TeX))) ;; use TeX input mode in Org-mode
+(setq org-adapt-indentation t) ;; indent by heading
+(with-eval-after-load 'org-ctags (setq org-open-link-functions nil)) ;; don't use ctags
+
+;; Setup compilation mode
+(require 'ansi-color)
+(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter) ;; use ansi colors
+
+;; Setup pdf tools
+(pdf-tools-install)
 
 ;; Setup Ocaml-mode
 (add-to-list 'load-path "~/.opam/default/share/emacs/site-lisp") ;;ocp-indent
