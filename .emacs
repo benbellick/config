@@ -61,26 +61,6 @@
 (setq haskell-font-lock-symbols t) ; display as unicode
 (setq haskell-tags-on-save t) ; Use hasktags on save
 
-;; agda-mode configuration
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
-;; auto-load agda-mode for .agda and .lagda.md
-(setq auto-mode-alist
-   (append
-     '(("\\.agda\\'" . agda2-mode)
-       ("\\.lagda.md\\'" . agda2-mode))
-     auto-mode-alist))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(highlight ((t (:background "brightblack" :foreground "magenta")))))
-
-(add-hook 'agda2-mode-hook
-  (lambda ()
-    (local-set-key (kbd "C-c C-g") 'agda2-goal-and-context)))
-
 ;; Add personal additions to TeX input mode
 (with-temp-buffer
   (activate-input-method "TeX") ;; the input method has to be triggered for `quail-package-alist' to be non-nil
@@ -124,3 +104,13 @@
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
+(add-hook 'tuareg-mode-hook
+          (lambda()
+            (when (functionp 'prettify-symbols-mode)
+              (prettify-symbols-mode))))
+
+;; imandra
+(add-to-list 'load-path "~/local_emacs/imandra-mode/")
+
+(require 'imandra-mode)
+(add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
