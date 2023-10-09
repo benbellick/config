@@ -79,6 +79,8 @@
      (set-input-method 'TeX))) ;; use TeX input mode in Org-mode
 (setq org-adapt-indentation t) ;; indent by heading
 (with-eval-after-load 'org-ctags (setq org-open-link-functions nil)) ;; don't use ctags
+(setq org-preview-latex-default-process 'dvisvgm)
+(setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
 
 ;; Setup compilation mode
 (require 'ansi-color)
