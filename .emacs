@@ -17,7 +17,7 @@
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(auctex org-bullets pdf-tools eglot rust-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode magit))
+   '(ocamlformat auctex org-bullets pdf-tools eglot rust-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode magit))
  '(revert-buffer-quick-short-answers t)
  '(safe-local-variable-values '((eval turn-off-auto-fill))))
 
@@ -94,7 +94,7 @@
 (let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
   (when (and opam-share (file-directory-p opam-share))
     ;; Register Merlin
-    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
+    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" yesopam-share))
     (autoload 'merlin-mode "merlin" nil t nil)
     ;; Automatically start it in OCaml buffers
     (add-hook 'tuareg-mode-hook 'merlin-mode t)
@@ -108,9 +108,18 @@
           (lambda()
             (when (functionp 'prettify-symbols-mode)
               (prettify-symbols-mode))))
-
+(setq tuareg-prettify-symbols-full t)
+(add-hook 'tuareg-mode-hook
+	  (lambda()
+	    (add-hook 'before-save-hook 'ocamlformat-before-save)))
 ;; imandra
 (add-to-list 'load-path "~/local_emacs/imandra-mode/")
 
 (require 'imandra-mode)
 (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
