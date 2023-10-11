@@ -61,26 +61,11 @@
 (setq haskell-font-lock-symbols t) ; display as unicode
 (setq haskell-tags-on-save t) ; Use hasktags on save
 
-;; Add personal additions to TeX input mode
-(with-temp-buffer
-  (activate-input-method "TeX") ;; the input method has to be triggered for `quail-package-alist' to be non-nil
-  (let ((quail-current-package (assoc "TeX" quail-package-alist)))
-   (quail-define-rules ((append . t))
-		       ("\\llBracket" ?⟦)
-		       ("\\rrBracket" ?⟧)
-		       ("\\varV" ?𝒱)
-		       ("\\varE" ?ℰ)
-		       ("\\varG" ?𝒢)
-		       )))
-
-;; Setup org mode
-(add-hook 'org-mode-hook
-   (lambda ()
-     (set-input-method 'TeX))) ;; use TeX input mode in Org-mode
-(setq org-adapt-indentation t) ;; indent by heading
-(with-eval-after-load 'org-ctags (setq org-open-link-functions nil)) ;; don't use ctags
-(setq org-preview-latex-default-process 'dvisvgm)
-(setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0))
+(with-eval-after-load 'org
+  (add-hook 'org-hook 'org-indent-mode)
+  (with-eval-after-load 'org-ctags (setq org-open-link-functions nil)) ;; don't use ctags
+  (setq org-preview-latex-default-process 'dvisvgm)
+  (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0)))
 
 ;; Setup compilation mode
 (require 'ansi-color)
@@ -96,7 +81,7 @@
 (let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
   (when (and opam-share (file-directory-p opam-share))
     ;; Register Merlin
-    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" yesopam-share))
+    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
     (autoload 'merlin-mode "merlin" nil t nil)
     ;; Automatically start it in OCaml buffers
     (add-hook 'tuareg-mode-hook 'merlin-mode t)
