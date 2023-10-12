@@ -41,12 +41,14 @@
 ;; line numbers
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
+;; text mode
+(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+
 ;; highlight whitespace after 80 characters
 (require 'whitespace)
 (setq whitespace-style '(face lines-tail))
 (setq whitespace-line-column 80)
 (add-hook 'prog-mode-hook 'whitespace-mode)
-
 
 ;; flymake keybindings
 (with-eval-after-load "flymake"
