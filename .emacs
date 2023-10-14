@@ -1,114 +1,119 @@
+;; Don't pollute with custom variables!
+(setq custom-file (concat user-emacs-directory "custom.el"))
+(when (file-exists-p custom-file)
+  (load custom-file))
 (require 'package)
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(TeX-view-program-selection
-   '((output-dvi "open")
-     (output-pdf "PDF Tools")
-     (output-html "open")))
- '(confirm-kill-emacs 'yes-or-no-p)
- '(css-indent-offset 2)
- '(custom-enabled-themes '(leuven-dark))
- '(haskell-process-log t)
- '(org-hide-emphasis-markers t)
- '(package-archives
-   '(("gnu" . "https://elpa.gnu.org/packages/")
-     ("melpa" . "https://melpa.org/packages/")))
- '(package-selected-packages
-   '(ocamlformat auctex org-bullets pdf-tools eglot rust-mode ement yaml-mode typescript-mode tuareg elfeed-org math-symbol-lists markdown-mode elpy haskell-mode magit))
- '(revert-buffer-quick-short-answers t)
- '(safe-local-variable-values '((eval turn-off-auto-fill))))
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
-(menu-bar-mode -1)
-(windmove-default-keybindings)
+(use-package emacs
+  :config
+    (menu-bar-mode -1)
+    (windmove-default-keybindings)
+    (setq backup-by-copying t      ; don't clobber symlinks
+	  backup-directory-alist
+	  '(("." . "~/.emacs.d/.saves/"))    ; don't litter my fs tree
+	  delete-old-versions t
+	  kept-new-versions 6
+	  kept-old-versions 2
+	  version-control t
+	  create-lockfiles nil
+	  auto-save-file-name-transforms `((".*" "~/.emacs.d/.saves/" t))
+	  confirm-kill-emacs 'yes-or-no-p
+	  revert-buffer-quick-short-answers t)
+    (load-theme 'leuven-dark t))
 
-;; move file backups into different directory
-(setq
-   backup-by-copying t      ; don't clobber symlinks
-   backup-directory-alist
-    '(("." . "~/.emacs.d/.saves/"))    ; don't litter my fs tree
-   delete-old-versions t
-   kept-new-versions 6
-   kept-old-versions 2
-   version-control t)       ; use versioned backups
 
-(setq create-lockfiles nil)
-(setq auto-save-file-name-transforms
-  `((".*" "~/.emacs.d/.saves/" t)))
+(use-package prog-mode
+  :hook (prog-mode . display-line-numbers-mode))
+(use-package text-mode
+  :hook (text-mode . turn-on-visual-line-mode))
 
-;; line numbers
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(use-package flymake
+  :bind (("M-n" . flymake-goto-next-error)
+	 ("M-p" . flymake-goto-prev-error)
+	 ("M-s" . flymake-show-project-diagnostics)))
 
-;; text mode
-(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+(use-package magit
+  :ensure t)
 
-;; highlight whitespace after 80 characters
-(require 'whitespace)
-(setq whitespace-style '(face lines-tail))
-(setq whitespace-line-column 80)
-(add-hook 'prog-mode-hook 'whitespace-mode)
+(use-package markdown-mode
+  :ensure t
+  :config
+    (setq markdown-fontify-code-blocks-natively t)) ; syntax highlight codeblocks
 
-;; flymake keybindings
-(with-eval-after-load "flymake"
-  (define-key flymake-mode-map (kbd "M-n") 'flymake-goto-next-error)
-  (define-key flymake-mode-map (kbd "M-p") 'flymake-goto-prev-error)
-  (define-key flymake-mode-map (kbd "M-s") 'flymake-show-project-diagnostics))
+(use-package haskell-mode
+  :ensure t
+  :config
+    (setq haskell-font-lock-symbols t
+	  haskell-tags-on-save t
+	  haskell-process-log t))
 
-;; markdown-mode configuration
-(setq markdown-fontify-code-blocks-natively t) ; syntax highlight codeblocks
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
 
-;; haskell-mode configuration
-(setq haskell-font-lock-symbols t) ; display as unicode
-(setq haskell-tags-on-save t) ; Use hasktags on save
+(use-package css-mode
+  :config
+  (setq css-indent-offset 2))
 
-(with-eval-after-load 'org
-  (add-hook 'org-hook 'org-indent-mode)
-  (with-eval-after-load 'org-ctags (setq org-open-link-functions nil)) ;; don't use ctags
-  (setq org-preview-latex-default-process 'dvisvgm)
-  (setq org-format-latex-options (plist-put org-format-latex-options :scale 3.0)))
+(use-package org
+  :hook (org-mode . org-indent-mode)
+  :ensure org-bullets
+  :config (setq org-preview-latex-default-process 'dvisvgm
+		org-format-latex-options (plist-put org-format-latex-options :scale 3.0)
+		org-open-link-functions nil ;; don't use ctags
+		org-hide-emphasis-markers t))
+
+(use-package org-bullets)
 
 ;; Setup compilation mode
-(require 'ansi-color)
-(add-hook 'compilation-filter-hook 'ansi-color-compilation-filter) ;; use ansi colors
+(use-package compile
+  :hook (compilation-filer-hook . ansi-color-compilation-filter))
 
-;; Setup pdf tools
-(pdf-tools-install)
+(use-package pdf-tools
+  :ensure t
+  :config (pdf-tools-install))
 
-;; Setup Ocaml-mode
-(add-to-list 'load-path "~/.opam/default/share/emacs/site-lisp") ;;ocp-indent
-(require 'ocp-indent)
+(use-package tex
+  :ensure auctex
+  :requires pdf-tools
+  :config
+    (setq TeX-view-program-selection
+	  '((output-dvi "open")
+	    (output-pdf "PDF Tools")
+	    (output-html "open"))))
 
-(let ((opam-share (ignore-errors (car (process-lines "opam" "var" "share")))))
-  (when (and opam-share (file-directory-p opam-share))
-    ;; Register Merlin
-    (add-to-list 'load-path (expand-file-name "emacs/site-lisp" opam-share))
-    (autoload 'merlin-mode "merlin" nil t nil)
-    ;; Automatically start it in OCaml buffers
-    (add-hook 'tuareg-mode-hook 'merlin-mode t)
-    (add-hook 'caml-mode-hook 'merlin-mode t)
-    ;; Use opam switch to lookup ocamlmerlin binary
-    (setq merlin-command 'opam)))
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
-(add-hook 'tuareg-mode-hook
-          (lambda()
-            (when (functionp 'prettify-symbols-mode)
-              (prettify-symbols-mode))))
-(setq tuareg-prettify-symbols-full t)
+(use-package ocamlformat
+  :ensure t)
+
+(use-package tuareg
+  :requires ocamlformat
+  :ensure t
+  :config (setq tuareg-prettify-symbols-full t)
+  :hook
+    (tuareg-mode . prettify-symbols-mode)
+    (tuareg-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save))))
+
+(use-package ocp-indent
+  :ensure t)
+
+(setq opam-share (ignore-errors (car (process-lines "opam" "var" "share"))))
+(setq opam-p (and opam-share (file-directory-p opam-share)))
+
+(use-package merlin
+  :if opam-p
+  :load-path (lambda () (expand-file-name "emacs/site-lisp" opam-share))
+  :config (setq merlin-command 'opam)
+  :hook (tuareg-mode . merlin-mode))
+
 (add-hook 'tuareg-mode-hook
 	  (lambda()
 	    (add-hook 'before-save-hook 'ocamlformat-before-save)))
-;; imandra
-(add-to-list 'load-path "~/local_emacs/imandra-mode/")
 
-(require 'imandra-mode)
-(add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+(use-package imandra-mode
+  :requires (tuareg)
+  :load-path "~/local_emacs/imandra-mode/"
+  :config
+    (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode)))
