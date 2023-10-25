@@ -91,13 +91,26 @@
 (use-package tuareg
   :requires ocamlformat
   :ensure t
-  :config (setq tuareg-prettify-symbols-full t)
+  :config
+    (setq tuareg-prettify-symbols-full t)
+    (defun opam-env ()
+      (interactive nil)
+      (dolist (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
+    (setenv (car var) (cadr var))))
   :hook
     (tuareg-mode . prettify-symbols-mode)
-    (tuareg-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save))))
+    (tuareg-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save)))
+    (tuareg-mode . (lambda() (setq compile-command "dune build"))))
 
 (use-package ocp-indent
   :ensure t)
+
+(use-package utop
+  :ensure t
+  :config
+    (setq utop-command "opam exec -- dune utop . -- -emacs")
+  :hook
+    (tuareg-mode . utop-minor-mode))
 
 (setq opam-share (ignore-errors (car (process-lines "opam" "var" "share"))))
 (setq opam-p (and opam-share (file-directory-p opam-share)))
