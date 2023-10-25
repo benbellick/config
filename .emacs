@@ -140,6 +140,10 @@
 
 (setq opam-share (ignore-errors (car (process-lines "opam" "var" "share"))))
 (setq opam-p (and opam-share (file-directory-p opam-share)))
+(defun opam-env ()
+  (interactive nil)
+  (dolist (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
+    (setenv (car var) (cadr var))))
 
 (use-package merlin
   :if opam-p
