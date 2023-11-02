@@ -112,7 +112,9 @@
 	    (output-html "open"))))
 
 (use-package ocamlformat
-  :ensure t)
+  :ensure t
+  :config
+    (setq ocamlformat-show-errors 'echo))
 
 (use-package tuareg
   :requires ocamlformat
