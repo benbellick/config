@@ -21,7 +21,10 @@
 	  auto-save-file-name-transforms `((".*" "~/.emacs.d/.saves/" t))
 	  confirm-kill-emacs 'yes-or-no-p
 	  revert-buffer-quick-short-answers t)
-    (load-theme 'leuven-dark t))
+    (load-theme 'leuven-dark t)
+    (set-language-environment 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-keyboard-coding-system 'utf-8-unix))
 
 
 (use-package prog-mode
@@ -119,7 +122,7 @@
   :if opam-p
   :load-path (lambda () (expand-file-name "emacs/site-lisp" opam-share))
   :config (setq merlin-command 'opam)
-  :hook (tuareg-mode . merlin-mode))
+  :hook (tuareg-mode . merlin-mode) (merlin-mode . company-mode))
 
 (add-hook 'tuareg-mode-hook
 	  (lambda()
