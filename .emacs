@@ -9,6 +9,7 @@
 (use-package emacs
   :config
     (menu-bar-mode -1)
+    (tool-bar-mode 0)
     (windmove-default-keybindings)
     (setq backup-by-copying t      ; don't clobber symlinks
 	  backup-directory-alist
@@ -24,7 +25,29 @@
     (load-theme 'leuven-dark t)
     (set-language-environment 'utf-8)
     (set-default-coding-systems 'utf-8)
-    (set-keyboard-coding-system 'utf-8-unix))
+    (set-keyboard-coding-system 'utf-8-unix)
+    ;better modified mode-line
+    (setq-default mode-line-modified (list
+				      '(:propertize (:eval (cond (buffer-read-only "🔒") (t "🔓")))
+				      help-echo mode-line-read-only-help-echo local-map
+						 (keymap
+						  (mode-line keymap
+							     (mouse-1 . mode-line-toggle-read-only)))
+						 mouse-face mode-line-highlight)
+                                      '(:propertize (:eval (cond ((buffer-modified-p) "🔴") (t "🟢")))
+					 help-echo mode-line-modified-help-echo local-map
+						    (keymap
+						     (mode-line keymap
+								(mouse-1 . mode-line-toggle-modified)))
+ 						    mouse-face mode-line-highlight)))
+    ;Get rid of annoying: mode-line-mule-info, mode-line-client, mode-line-remote
+    (setq-default mode-line-format '("%e" mode-line-front-space
+				    (:propertize ("" mode-line-modified) display (min-width (5.0)))
+				    mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position
+				    (vc-mode vc-mode)
+				    "  " mode-line-modes mode-line-misc-info mode-line-end-spaces)))
+
+
 
 
 (use-package prog-mode
