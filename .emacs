@@ -47,6 +47,9 @@
 				    (vc-mode vc-mode)
 				    "  " mode-line-modes mode-line-misc-info mode-line-end-spaces)))
 
+;;No more accidental kill emacs while using merlin
+(global-unset-key (kbd "C-x C-c"))
+(global-set-key (kbd "C-x C-q") 'save-buffers-kill-terminal)
 
 
 
