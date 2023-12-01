@@ -34,7 +34,7 @@
 						  (mode-line keymap
 							     (mouse-1 . mode-line-toggle-read-only)))
 						 mouse-face mode-line-highlight)
-                                      '(:propertize (:eval (cond ((buffer-modified-p) "🔴") (t "🟢")))
+                                      '(:propertize (:eval (cond ((buffer-modified-p) "[*]") (t "[·]")))
 					 help-echo mode-line-modified-help-echo local-map
 						    (keymap
 						     (mode-line keymap
