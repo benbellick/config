@@ -28,7 +28,7 @@
     (set-keyboard-coding-system 'utf-8-unix)
     ;better modified mode-line
     (setq-default mode-line-modified (list
-				      '(:propertize (:eval (cond (buffer-read-only "🔒") (t "🔓")))
+				      '(:propertize (:eval (cond (buffer-read-only "[x]") (t "[ ]")))
 				      help-echo mode-line-read-only-help-echo local-map
 						 (keymap
 						  (mode-line keymap
@@ -39,7 +39,7 @@
 						    (keymap
 						     (mode-line keymap
 								(mouse-1 . mode-line-toggle-modified)))
- 						    mouse-face mode-line-highlight)))
+						    mouse-face mode-line-highlight)))
     ;Get rid of annoying: mode-line-mule-info, mode-line-client, mode-line-remote
     (setq-default mode-line-format '("%e" mode-line-front-space
 				    (:propertize ("" mode-line-modified) display (min-width (5.0)))
@@ -52,6 +52,16 @@
 (global-set-key (kbd "C-x C-q") 'save-buffers-kill-terminal)
 
 
+;;Add ability to switch to buffer when switching file
+(use-package project
+  :config
+  (setq project-switch-commands '((project-find-file "Find file")
+				  (project-switch-to-buffer "Find buffer")
+				  (project-find-regexp "Find regexp")
+				  (project-find-dir "Find directory")
+				  (project-vc-dir "VC-Dir")
+				  (project-eshell "Eshell")
+				  (magit-project-status "Magit"))))
 
 (use-package prog-mode
   :hook (prog-mode . display-line-numbers-mode))
