@@ -59,9 +59,8 @@
 				  (project-switch-to-buffer "Find buffer")
 				  (project-find-regexp "Find regexp")
 				  (project-find-dir "Find directory")
-				  (project-vc-dir "VC-Dir")
 				  (project-eshell "Eshell")
-				  (magit-project-status "Magit"))))
+				  (magit-project-status "Magit" ?m))))
 
 (use-package prog-mode
   :hook (prog-mode . display-line-numbers-mode))
@@ -91,7 +90,11 @@
 (use-package elpy
   :ensure t
   :init
-  (elpy-enable))
+  (elpy-enable)
+  :config
+  (add-hook 'elpy-mode-hook (lambda ()
+                            (add-hook 'before-save-hook
+                                      'elpy-black-fix-code nil t))))
 
 (use-package css-mode
   :config
