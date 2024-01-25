@@ -60,6 +60,7 @@
 				  (project-find-regexp "Find regexp")
 				  (project-find-dir "Find directory")
 				  (project-eshell "Eshell")
+				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m))))
 
 (use-package prog-mode
@@ -74,6 +75,11 @@
 
 (use-package magit
   :ensure t)
+
+(use-package hl-todo
+  :ensure t
+  :hook ((prog-mode . hl-todo-mode)))
+
 
 (use-package markdown-mode
   :ensure t
