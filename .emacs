@@ -196,3 +196,7 @@
 
 (load-file (let ((coding-system-for-read 'utf-8))
                 (shell-command-to-string "agda-mode locate")))
+
+(use-package ipl-mode
+  :mode "\\.ipl\\'"
+  :load-path "~/local_emacs/ipl-mode/")
