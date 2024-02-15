@@ -129,6 +129,17 @@
 (use-package compile
   :hook (compilation-filer-hook . ansi-color-compilation-filter))
 
+(use-package ansi-color
+    :hook (compilation-filter . ansi-color-compilation-filter)) 
+
+(defun colorize-compilation-buffer ()
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (save-excursion 
+                                  (goto-char compilation-filter-start) 
+                                  (line-beginning-position))
+                                (point))))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+
 (use-package pdf-tools
   :ensure t
   :config (pdf-tools-install))
