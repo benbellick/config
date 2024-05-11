@@ -113,6 +113,7 @@
 		org-format-latex-options (plist-put org-format-latex-options :scale 3.0)
 		org-open-link-functions nil ;; don't use ctags
 		org-hide-emphasis-markers t
+		org-list-allow-alphabetical t
 		org-entities-user '(("mreal" "\\mathbb{R}" t "real" "real" "R" "ℝ"))))
 
 (use-package org-bullets)
