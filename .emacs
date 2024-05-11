@@ -112,7 +112,8 @@
   :config (setq org-preview-latex-default-process 'dvisvgm
 		org-format-latex-options (plist-put org-format-latex-options :scale 3.0)
 		org-open-link-functions nil ;; don't use ctags
-		org-hide-emphasis-markers t))
+		org-hide-emphasis-markers t
+		org-entities-user '(("mreal" "\\mathbb{R}" t "real" "real" "R" "ℝ"))))
 
 (use-package org-bullets)
 
@@ -184,3 +185,6 @@
   :load-path "~/local_emacs/imandra-mode/"
   :config
     (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode)))
+
+(load-file (let ((coding-system-for-read 'utf-8))
+                (shell-command-to-string "agda-mode locate")))
