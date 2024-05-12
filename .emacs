@@ -114,7 +114,13 @@
 		org-open-link-functions nil ;; don't use ctags
 		org-hide-emphasis-markers t
 		org-list-allow-alphabetical t
-		org-entities-user '(("mreal" "\\mathbb{R}" t "real" "real" "R" "ℝ"))))
+		org-entities-user '(("R" "\\mathbb{R}" t "real" "real" "R" "ℝ")
+				    ("Z" "\\mathbb{Z}" t "ints" "ints" "Z" "ℤ")
+				    ("N" "\\mathbb{N}" t "nat" "nat" "N" "ℕ")
+				    ("Q" "\\mathbb{Q}" t "rationals" "rationals" "Q" "ℚ")
+				    ("C" "\mathbb{C}" t "complex" "complex" "C" "ℂ")
+				    ("tleq" "\trianglelefteqslant" t  ""  "" "" "⊴")
+				    ("tle" "\trinalge" t "" "" "" "⊲"))))
 
 (use-package org-bullets)
 
