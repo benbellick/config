@@ -120,7 +120,8 @@
 				    ("Q" "\\mathbb{Q}" t "rationals" "rationals" "Q" "ℚ")
 				    ("C" "\mathbb{C}" t "complex" "complex" "C" "ℂ")
 				    ("tleq" "\trianglelefteqslant" t  ""  "" "" "⊴")
-				    ("tle" "\trinalge" t "" "" "" "⊲"))))
+				    ("tle" "\trinalge" t "" "" "" "⊲")
+				    ("qed" "\qedsymbol" t "" "" "" "□"))))
 
 (use-package org-bullets)
 
