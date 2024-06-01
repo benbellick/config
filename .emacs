@@ -59,7 +59,7 @@
 				  (project-switch-to-buffer "Find buffer")
 				  (project-find-regexp "Find regexp")
 				  (project-find-dir "Find directory")
-				  (project-eshell "Eshell")
+				  (project-shell "Shell")
 				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m))))
 
