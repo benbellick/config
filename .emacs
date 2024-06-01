@@ -199,6 +199,16 @@
 	  (lambda()
 	    (add-hook 'before-save-hook 'ocamlformat-before-save)))
 
+
+;; (use-package reason-mode
+;;   :ensure t
+;;   :hook
+;;     (tuareg-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save))))
+
+(use-package direnv
+  :config
+  (direnv-mode))
+
 (use-package imandra-mode
   :requires (tuareg)
   :load-path "~/local_emacs/imandra-mode/"
