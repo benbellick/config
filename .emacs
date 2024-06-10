@@ -114,6 +114,7 @@
 		org-open-link-functions nil ;; don't use ctags
 		org-hide-emphasis-markers t
 		org-list-allow-alphabetical t
+		org-id-link-to-org-use-id t
 		org-entities-user '(("R" "\\mathbb{R}" t "real" "real" "R" "ℝ")
 				    ("Z" "\\mathbb{Z}" t "ints" "ints" "Z" "ℤ")
 				    ("N" "\\mathbb{N}" t "nat" "nat" "N" "ℕ")
