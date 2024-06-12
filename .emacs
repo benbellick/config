@@ -122,7 +122,8 @@
 				    ("C" "\mathbb{C}" t "complex" "complex" "C" "ℂ")
 				    ("tleq" "\trianglelefteqslant" t  ""  "" "" "⊴")
 				    ("tle" "\trinalge" t "" "" "" "⊲")
-				    ("qed" "\qedsymbol" t "" "" "" "□"))))
+				    ("qed" "\qedsymbol" t "" "" "" "□")
+				    ("mapsto" "\mapsto" t "" "" "" "↦"))))
 
 (use-package org-bullets)
 
