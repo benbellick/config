@@ -68,6 +68,11 @@
 (use-package text-mode
   :hook (text-mode . turn-on-visual-line-mode))
 
+(use-package smerge-mode
+  :ensure t
+  :init
+  (setq smerge-command-prefix (kbd "C-c v")))
+
 (use-package flymake
   :bind (("M-n" . flymake-goto-next-error)
 	 ("M-p" . flymake-goto-prev-error)
