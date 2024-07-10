@@ -229,6 +229,15 @@
   :hook
   (c++-mode . start-eglot-if-compile-commands-present))
 
+(use-package eglot
+  :bind (("C-c C-f" . eglot-code-action-quickfix)
+	 ("C-c C-r" . eglot-rename)
+	 ("C-c C-c" . eglot-format))
+  :config
+  (add-hook 'eglot-mode-hook (lambda ()
+                            (add-hook 'before-save-hook
+                                      'eglot-format))))
+
 (use-package imandra-mode
   :requires (tuareg)
   :load-path "~/local_emacs/imandra-mode/"
@@ -244,11 +253,3 @@
   :load-path "~/local_emacs/ipl-mode/")
 
 
-(use-package eglot
-  :bind (("C-c C-f" . eglot-code-action-quickfix)
-	 ("C-c C-r" . eglot-rename)
-	 ("C-c C-c" . eglot-format))
-  :config
-  (add-hook 'eglot-mode-hook (lambda ()
-                            (add-hook 'before-save-hook
-                                      'eglot-format))))
