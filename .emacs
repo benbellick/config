@@ -238,11 +238,23 @@
                             (add-hook 'before-save-hook
                                       'eglot-format))))
 
+(defun ocamlformat-before-save-imandra ()
+  "Add this to .emacs to run ocamlformat on the current buffer when saving:"
+  (interactive)
+  (when (memq major-mode '(imandra-mode)) (ocamlformat)))
+
 (use-package imandra-mode
   :requires (tuareg)
   :load-path "~/local_emacs/imandra-mode/"
   :config
-    (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode)))
+  (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
+  (defun ocamlformat-before-save-imandra ()
+    "Add this to .emacs to run ocamlformat on the current buffer when saving:"
+    (interactive)
+    (when (memq major-mode '(imandra-mode)) (ocamlformat)))
+  :hook
+    (imandra-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save-imandra))))
+
 
 
 (load-file (let ((coding-system-for-read 'utf-8))
