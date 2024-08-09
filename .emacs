@@ -111,6 +111,7 @@
   :config
   (setq css-indent-offset 2))
 
+	
 (use-package org
   :hook (org-mode . org-indent-mode)
   :ensure org-bullets
@@ -128,7 +129,9 @@
 				    ("tleq" "\trianglelefteqslant" t  ""  "" "" "⊴")
 				    ("tle" "\trinalge" t "" "" "" "⊲")
 				    ("qed" "\qedsymbol" t "" "" "" "□")
-				    ("mapsto" "\mapsto" t "" "" "" "↦"))))
+				    ("mapsto" "\mapsto" t "" "" "" "↦"))
+		org-babel-load-languages '((latex . t)
+					   (emacs-lisp . t))))
 
 (use-package org-bullets)
 
@@ -158,7 +161,8 @@
     (setq TeX-view-program-selection
 	  '((output-dvi "open")
 	    (output-pdf "PDF Tools")
-	    (output-html "open"))))
+	    (output-html "open"))
+	  exec-path (append exec-path '("/Library/TeX/texbin/"))))
 
 (use-package ocamlformat
   :ensure t
@@ -212,6 +216,11 @@
   :hook
     (reason-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save)))
 
+(use-package direnv
+  :defer t
+  :config
+  (direnv-mode))
+
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
@@ -262,5 +271,3 @@
 (use-package ipl-mode
   :mode "\\.ipl\\'"
   :load-path "~/local_emacs/ipl-mode/")
-
-
