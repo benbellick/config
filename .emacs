@@ -179,8 +179,8 @@
     (tuareg-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save)))
     (tuareg-mode . (lambda() (setq compile-command "dune build"))))
 
-(use-package ocp-indent
-  :ensure t)
+;; (use-package ocp-indent
+;;   :ensure t)
 
 (use-package utop
   :ensure t
@@ -207,15 +207,14 @@
 	    (add-hook 'before-save-hook 'ocamlformat-before-save)))
 
 
-;; (use-package reason-mode
-;;   :ensure t
-;;   :hook
-;;     (tuareg-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save))))
+(use-package reason-mode
+  :ensure t
+  :hook
+    (reason-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save)))
 
-(use-package direnv
-  :config
-  (direnv-mode))
-
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
 
 (use-package cc-mode
   :config
@@ -244,7 +243,7 @@
   (when (memq major-mode '(imandra-mode)) (ocamlformat)))
 
 (use-package imandra-mode
-  :requires (tuareg)
+  :ensure nil
   :load-path "~/local_emacs/imandra-mode/"
   :config
   (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
