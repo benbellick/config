@@ -129,9 +129,13 @@
 				    ("tleq" "\trianglelefteqslant" t  ""  "" "" "⊴")
 				    ("tle" "\trinalge" t "" "" "" "⊲")
 				    ("qed" "\qedsymbol" t "" "" "" "□")
-				    ("mapsto" "\mapsto" t "" "" "" "↦"))
+				    ("mapsto" "\mapsto" t "" "" "" "↦")
+				    )
 		org-babel-load-languages '((latex . t)
-					   (emacs-lisp . t))))
+					   (emacs-lisp . t)))
+  (add-to-list 'org-latex-packages-alist '("" "tikz-cd" t))
+  (add-to-list 'org-latex-packages-alist '("" "tikz" t))
+  :bind ("C-c l" . 'org-store-link))
 
 (use-package org-bullets)
 
