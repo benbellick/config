@@ -12,3 +12,10 @@ cg() {
 cgg() {
     cd "$(git rev-parse --show-superproject-working-tree)"
 }
+
+bak () {
+    mv "$1"  "$1.bak"
+}
+unbak () {
+    mv "$1.bak"  "$1"
+}
