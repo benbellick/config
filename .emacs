@@ -64,7 +64,9 @@
 				  (magit-project-status "Magit" ?m))))
 
 (use-package prog-mode
-  :hook (prog-mode . display-line-numbers-mode))
+  :hook (prog-mode . display-line-numbers-mode)
+        (prog-mode . flyspell-prog-mode))
+
 (use-package text-mode
   :hook (text-mode . turn-on-visual-line-mode))
 
