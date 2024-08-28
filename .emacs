@@ -83,6 +83,11 @@
 (use-package magit
   :ensure t)
 
+(use-package forge
+  :after magit)
+
+(setq auth-sources '("~/.authinfo.gpg"))
+
 (use-package hl-todo
   :ensure t
   :hook ((prog-mode . hl-todo-mode)))
