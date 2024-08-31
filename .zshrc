@@ -19,3 +19,7 @@ bak () {
 unbak () {
     mv "$1.bak"  "$1"
 }
+
+
+#use direnv
+eval "$(direnv hook zsh)"
