@@ -225,16 +225,7 @@
 (use-package reason-mode
   :ensure t
   :hook
-    (reason-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save)))
-
-(use-package direnv
-  :defer t
-  :config
-  (direnv-mode))
-
-(use-package envrc
-  :ensure t
-  :hook (after-init . envrc-global-mode))
+    (reason-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save))))
 
 (use-package cc-mode
   :config
@@ -276,9 +267,14 @@
 
 
 
-(load-file (let ((coding-system-for-read 'utf-8))
-                (shell-command-to-string "agda-mode locate")))
+;; (load-file (let ((coding-system-for-read 'utf-8))
+                ;; (shell-command-to-string "agda-mode locate")))
 
 (use-package ipl-mode
   :mode "\\.ipl\\'"
   :load-path "~/local_emacs/ipl-mode/")
+
+;; This MUST be the last item in the list
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
