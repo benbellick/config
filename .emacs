@@ -242,6 +242,7 @@
 (use-package eglot
   :bind (("C-c C-f" . eglot-code-action-quickfix)
 	 ("C-c C-r" . eglot-rename)
+	 ("C-c C-t" . eglot-find-typeDefinition)
 	 ("C-c C-c" . eglot-format))
   :config
   (add-hook 'eglot-mode-hook (lambda ()
