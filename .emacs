@@ -249,6 +249,7 @@
 ;;                                       'eglot-format))))
 ;; Going to experiment with lsp-mode
 (use-package lsp-mode
+  :ensure t
   :init
   ;; set prefix for lsp-command-keymap (few alternatives - "C
   (setq lsp-keymap-prefix "s-l")
@@ -262,22 +263,22 @@
   :commands (lsp lsp-deferred))
 
 
-(defun ocamlformat-before-save-imandra ()
-  "Add this to .emacs to run ocamlformat on the current buffer when saving:"
-  (interactive)
-  (when (memq major-mode '(imandra-mode)) (ocamlformat)))
+;; (defun ocamlformat-before-save-imandra ()
+;;   "Add this to .emacs to run ocamlformat on the current buffer when saving:"
+;;   (interactive)
+;;   (when (memq major-mode '(imandra-mode)) (ocamlformat)))
 
-(use-package imandra-mode
-  :ensure nil
-  :load-path "~/local_emacs/imandra-mode/"
-  :config
-  (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
-  (defun ocamlformat-before-save-imandra ()
-    "Add this to .emacs to run ocamlformat on the current buffer when saving:"
-    (interactive)
-    (when (memq major-mode '(imandra-mode)) (ocamlformat)))
-  :hook
-    (imandra-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save-imandra))))
+;; (use-package imandra-mode
+;;   :ensure nil
+;;   :load-path "~/local_emacs/imandra-mode/"
+;;   :config
+;;   (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
+;;   (defun ocamlformat-before-save-imandra ()
+;;     "Add this to .emacs to run ocamlformat on the current buffer when saving:"
+;;     (interactive)
+;;     (when (memq major-mode '(imandra-mode)) (ocamlformat)))
+;;   :hook
+;;     (imandra-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save-imandra))))
 
 
 
@@ -288,12 +289,19 @@
   :mode "\\.ipl[d]\\'"
   :load-path "~/local_emacs/ipl-mode/")
 
-;; This MUST be the last item in the list
-(use-package envrc
-  :ensure t
-  :hook (after-init . envrc-global-mode))
 
 (use-package lsp-tailwindcss
   :after lsp-mode
   :init
   (setq lsp-tailwindcss-add-on-mode t))
+
+(use-package yasnippet                 
+  :ensure t
+  :config
+  (setq yas-snippet-dirs '("~/config/emacs/snippets"))
+  :hook ((prog-mode . yas-minor-mode)))
+
+;; This MUST be the last item in the list
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
