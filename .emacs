@@ -239,15 +239,28 @@
   :hook
   (c++-mode . start-eglot-if-compile-commands-present))
 
-(use-package eglot
-  :bind (("C-c C-f" . eglot-code-action-quickfix)
-	 ("C-c C-r" . eglot-rename)
-	 ("C-c C-t" . eglot-find-typeDefinition)
-	 ("C-c C-c" . eglot-format))
-  :config
-  (add-hook 'eglot-mode-hook (lambda ()
-                            (add-hook 'before-save-hook
-                                      'eglot-format))))
+;; (use-package eglot
+;;   :bind (("C-c C-f" . eglot-code-action-quickfix)
+;; 	 ("C-c C-r" . eglot-rename)
+;; 	 ("C-c C-c" . eglot-format))
+;;   :config
+;;   (add-hook 'eglot-mode-hook (lambda ()
+;;                             (add-hook 'before-save-hook
+;;                                       'eglot-format))))
+;; Going to experiment with lsp-mode
+(use-package lsp-mode
+  :init
+  ;; set prefix for lsp-command-keymap (few alternatives - "C
+  (setq lsp-keymap-prefix "s-l")
+  ;; :config (define-key lsp-mode-map (kbd "s-l") nil)
+  :bind-keymap ("s-l" . lsp-command-map)  
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (reason-mode . lsp-deferred)
+         (tuareg-mode . lsp-deferred))
+         ;; if you want which-key integration
+         ;; (lsp-mode . lsp-enable-which-key-integration))
+  :commands (lsp lsp-deferred))
+
 
 (defun ocamlformat-before-save-imandra ()
   "Add this to .emacs to run ocamlformat on the current buffer when saving:"
@@ -272,10 +285,15 @@
                 ;; (shell-command-to-string "agda-mode locate")))
 
 (use-package ipl-mode
-  :mode "\\.ipl\\'"
+  :mode "\\.ipl[d]\\'"
   :load-path "~/local_emacs/ipl-mode/")
 
 ;; This MUST be the last item in the list
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
+
+(use-package lsp-tailwindcss
+  :after lsp-mode
+  :init
+  (setq lsp-tailwindcss-add-on-mode t))
