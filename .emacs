@@ -299,6 +299,7 @@
   :ensure t
   :config
   (setq yas-snippet-dirs '("~/config/emacs/snippets"))
+  (setq yas-wrap-around-region t)
   :hook ((prog-mode . yas-minor-mode)))
 
 ;; This MUST be the last item in the list
