@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: React.useState
+# key: state
+# --
+let (${1:state}, ${2:setState}) = React.useState(() => ${3:initialValue});

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: paragraph
+# key: p
+# --
+<p> ${1:content} </p>
