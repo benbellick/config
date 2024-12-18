@@ -214,6 +214,9 @@
   (dolist (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
     (setenv (car var) (cadr var))))
 
+(use-package company
+  :config (setq company-idle-delay 0.01))
+
 (use-package merlin
   :if opam-p
   :load-path (lambda () (expand-file-name "emacs/site-lisp" opam-share))
@@ -301,7 +304,8 @@
 (use-package yasnippet                 
   :ensure t
   :config
-  (setq yas-snippet-dirs '("~/config/emacs/snippets"))
+  (setq yas-snippet-dirs (append yas-snippet-dirs
+				 '("~/config/emacs/snippets")))
   (setq yas-wrap-around-region t)
   :hook ((prog-mode . yas-minor-mode)))
 
@@ -309,3 +313,6 @@
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
+
+(use-package kubernetes
+    :ensure t)
