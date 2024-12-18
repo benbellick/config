@@ -45,7 +45,10 @@
 				    (:propertize ("" mode-line-modified) display (min-width (5.0)))
 				    mode-line-frame-identification mode-line-buffer-identification "   " mode-line-position
 				    (vc-mode vc-mode)
-				    "  " mode-line-modes mode-line-misc-info mode-line-end-spaces)))
+				    "  " mode-line-modes mode-line-misc-info mode-line-end-spaces))
+    ;So that lsp-mode performs better
+    (setq read-process-output-max (* 1024 1024 ))
+    (setq gc-cons-threshold 100000000)) ;;1mb
 
 ;;No more accidental kill emacs while using merlin
 (global-unset-key (kbd "C-x C-c"))
