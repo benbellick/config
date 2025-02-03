@@ -11,6 +11,7 @@
     (menu-bar-mode -1)
     (tool-bar-mode 0)
     (windmove-default-keybindings)
+    (setq completion-cycle-threshold 3) ;; autocomplete when only three suggestions
     (setq backup-by-copying t      ; don't clobber symlinks
 	  backup-directory-alist
 	  '(("." . "~/.emacs.d/.saves/"))    ; don't litter my fs tree
@@ -86,8 +87,8 @@
 (use-package magit
   :ensure t)
 
-(use-package forge
-  :after magit)
+;; (use-package forge
+  ;; :after magit)
 
 (setq auth-sources '("~/.authinfo.gpg"))
 
@@ -254,6 +255,12 @@
 ;;                             (add-hook 'before-save-hook
 ;;                                       'eglot-format))))
 ;; Going to experiment with lsp-mode
+
+(use-package ipl-mode
+  :mode "\\.ipl\\'"
+  :load-path "~/local_emacs/ipl-mode/")
+
+
 (use-package lsp-mode
   :ensure t
   :init
@@ -265,7 +272,14 @@
          (reason-mode . lsp-deferred)
          (tuareg-mode . lsp-deferred))
          ;; if you want which-key integration
-         ;; (lsp-mode . lsp-enable-which-key-integration))
+  ;; (lsp-mode . lsp-enable-which-key-integration))
+  :config
+  (add-to-list 'lsp-language-id-configuration '(ipl-mode . "ipl"))
+  (lsp-register-client (make-lsp-client
+			:new-connection (lsp-stdio-connection "/Users/benjaminbellick/work/ipl/ipl-vscode/xtext-server/bin/ipl-server")
+			:activation-fn (lsp-activate-on "ipl")
+			:server-id 'iplls))
+  
   :commands (lsp lsp-deferred))
 
 
@@ -291,9 +305,6 @@
 ;; (load-file (let ((coding-system-for-read 'utf-8))
                 ;; (shell-command-to-string "agda-mode locate")))
 
-(use-package ipl-mode
-  :mode "\\.ipl[d]\\'"
-  :load-path "~/local_emacs/ipl-mode/")
 
 
 (use-package lsp-tailwindcss
@@ -309,10 +320,21 @@
   (setq yas-wrap-around-region t)
   :hook ((prog-mode . yas-minor-mode)))
 
+
+;; (use-package kubernetes
+  ;; :ensure t)
+
+(use-package gptel
+  :ensure t)
+ 
 ;; This MUST be the last item in the list
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
 
-(use-package kubernetes
-    :ensure t)
+(defun copy-buffer ()
+  (interactive)
+  (kill-ring-save (point-min) (point-max))
+  (message "Copied buffer"))
+
+(global-set-key (kbd "C-x M-w") 'copy-buffer)
