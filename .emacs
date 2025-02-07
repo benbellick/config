@@ -326,11 +326,9 @@
 
 (use-package gptel
   :ensure t)
- 
-;; This MUST be the last item in the list
-(use-package envrc
-  :ensure t
-  :hook (after-init . envrc-global-mode))
+
+(use-package nix-mode
+  :ensure t)
 
 (defun copy-buffer ()
   (interactive)
@@ -338,3 +336,8 @@
   (message "Copied buffer"))
 
 (global-set-key (kbd "C-x M-w") 'copy-buffer)
+
+;; This MUST be the last item in the list
+(use-package envrc
+  :ensure t
+  :hook (after-init . envrc-global-mode))
