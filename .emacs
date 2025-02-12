@@ -22,6 +22,7 @@
 	  create-lockfiles nil
 	  auto-save-file-name-transforms `((".*" "~/.emacs.d/.saves/" t))
 	  confirm-kill-emacs 'yes-or-no-p
+	  visible-bell t
 	  revert-buffer-quick-short-answers t)
     (load-theme 'leuven-dark t)
     (set-language-environment 'utf-8)
@@ -109,14 +110,14 @@
 	  haskell-tags-on-save t
 	  haskell-process-log t))
 
-(use-package elpy
-  :ensure t
-  :init
-  (elpy-enable)
-  :config
-  (add-hook 'elpy-mode-hook (lambda ()
-                            (add-hook 'before-save-hook
-                                      'elpy-black-fix-code nil t))))
+;; (use-package elpy
+;;   :ensure t
+;;   :init
+;;   (elpy-enable)
+;;   :config
+;;   (add-hook 'elpy-mode-hook (lambda ()
+;;                             (add-hook 'before-save-hook
+;;                                       'elpy-black-fix-code nil t))))
 
 (use-package css-mode
   :config
@@ -328,6 +329,15 @@
   :ensure t)
 
 (use-package nix-mode
+  :ensure t)
+
+(use-package yaml-mode
+  :ensure t)
+
+(use-package dockerfile-mode
+  :ensure t)
+
+(use-package terraform-mode
   :ensure t)
 
 (defun copy-buffer ()
