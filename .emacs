@@ -322,9 +322,6 @@
   :hook ((prog-mode . yas-minor-mode)))
 
 
-;; (use-package kubernetes
-  ;; :ensure t)
-
 (use-package gptel
   :ensure t)
 
@@ -346,6 +343,28 @@
   (message "Copied buffer"))
 
 (global-set-key (kbd "C-x M-w") 'copy-buffer)
+(use-package kubernetes
+    :ensure t)
+
+
+(require 'dap-lldb)
+(require 'dap-cpptools)
+(setq dap-lldb-debug-program '("/Library/Developer/CommandLineTools/usr/bin/lldb-dap"))
+
+(use-package treesit
+  :config
+  (setq treesit-language-source-alist
+	'((dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))))
+
+
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config
+  (dap-mode 1)
+  (dap-ui-mode 1)
+  (require 'dap-lldb)) 
+
 
 ;; This MUST be the last item in the list
 (use-package envrc
