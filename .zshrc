@@ -20,10 +20,14 @@ unbak () {
     mv "$1.bak"  "$1"
 }
 
+cdls() { 
+    cd "$@" && ls; 
+}
+
 alias k=kubectl
 alias kc='kubectl config use-context'
 alias kcc='kubectl config current-context'
 alias wk='watch kubectl'
 
 #use direnv
-eval "$(direnv hook zsh)"
+# eval "$(direnv hook zsh)"

@@ -370,3 +370,7 @@
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
+
+
+(use-package lsp-java
+  :hook (java-mode-hook . lsp))
