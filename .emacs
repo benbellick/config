@@ -66,7 +66,8 @@
 				  (project-find-dir "Find directory")
 				  (project-shell "Shell")
 				  (project-kill-buffers "Kill all buffers")
-				  (magit-project-status "Magit" ?m))))
+				  (magit-project-status "Magit" ?m)
+				  (rg-project "Ripgrep" ?R))))
 
 (use-package prog-mode
   :hook (prog-mode . display-line-numbers-mode)
@@ -357,6 +358,9 @@
 	'((dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile"))))
 
 
+(use-package rg
+  :ensure t)
+
 (use-package dap-mode
   :ensure t
   :after lsp-mode
@@ -366,11 +370,26 @@
   (require 'dap-lldb)) 
 
 
+(use-package lsp-java
+  :hook (java-mode-hook . lsp))
+
+;; Need vterm for claude-code below
+(use-package vterm :ensure t)
+
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config (claude-code-mode)
+  (setq claude-code-terminal-backend 'vterm)
+  :bind-keymap ("C-c c" . claude-code-command-map))
+
+(use-package claude-code-ide
+  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+  :bind ("C-c C-'" . claude-code-ide-menu)
+  :config
+  (claude-code-ide-emacs-tools-setup)
+  (setq claude-code-ide-prevent-reflow-glitch nil))
+
 ;; This MUST be the last item in the list
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
-
-
-(use-package lsp-java
-  :hook (java-mode-hook . lsp))
