@@ -67,7 +67,8 @@
 				  (project-shell "Shell")
 				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m)
-				  (rg-project "Ripgrep" ?R))))
+				  (rg-project "Ripgrep" ?R)))
+  :bind ("C-x p R" . rg-project))
 
 (use-package prog-mode
   :hook (prog-mode . display-line-numbers-mode)
