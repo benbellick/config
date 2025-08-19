@@ -6,6 +6,10 @@ alias ec="emacsclient -c -a '' -n"
 #cd into git parent directory
 cg() {
     cd "$(git rev-parse --show-toplevel)"
+    if [ -n "$1" ]
+        then
+	    cd $1
+    fi
 }
 
 #cd into git parent directory if in submodule
