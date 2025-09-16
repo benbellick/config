@@ -57,6 +57,12 @@
 (global-set-key (kbd "C-x C-q") 'save-buffers-kill-terminal)
 
 
+(use-package ef-themes
+  :ensure t
+  :config
+  (ef-themes-select 'ef-cyprus))
+
+
 ;;Add ability to switch to buffer when switching file
 (use-package project
   :config
@@ -377,18 +383,17 @@
 ;; Need vterm for claude-code below
 (use-package vterm :ensure t)
 
-(use-package claude-code :ensure t
-  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
-  :config (claude-code-mode)
-  (setq claude-code-terminal-backend 'vterm)
-  :bind-keymap ("C-c c" . claude-code-command-map))
-
 (use-package claude-code-ide
+  :ensure t
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :bind ("C-c C-'" . claude-code-ide-menu)
   :config
   (claude-code-ide-emacs-tools-setup)
   (setq claude-code-ide-prevent-reflow-glitch nil))
+
+(use-package twen-twen-tw
+  :ensure t
+  :vc (:url "https://github.com/benbellick/twen-twen-tw.el" :rev :newest))
 
 ;; This MUST be the last item in the list
 (use-package envrc
