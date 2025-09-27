@@ -342,7 +342,9 @@
 
 (use-package twen-twen-tw
   :ensure t
-  :vc (:url "https://github.com/benbellick/twen-twen-tw.el" :rev :newest))
+  :vc (:url "git@github.com:benbellick/twen-twen-tw.el.git" :rev :newest)
+  :config
+  (twen-twen-tw-mode 1))
 
 ;; This MUST be the last item in the list
 (use-package envrc
