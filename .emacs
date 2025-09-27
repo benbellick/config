@@ -237,12 +237,6 @@
 	  (lambda()
 	    (add-hook 'before-save-hook 'ocamlformat-before-save)))
 
-
-(use-package reason-mode
-  :ensure t
-  :hook
-    (reason-mode . (lambda() (add-hook 'before-save-hook 'refmt-before-save))))
-
 (use-package cc-mode
   :config
   ;; annoying to have this binding as I like having it format via eglot
@@ -254,21 +248,6 @@
 	(eglot-ensure))))
   :hook
   (c++-mode . start-eglot-if-compile-commands-present))
-
-;; (use-package eglot
-;;   :bind (("C-c C-f" . eglot-code-action-quickfix)
-;; 	 ("C-c C-r" . eglot-rename)
-;; 	 ("C-c C-c" . eglot-format))
-;;   :config
-;;   (add-hook 'eglot-mode-hook (lambda ()
-;;                             (add-hook 'before-save-hook
-;;                                       'eglot-format))))
-;; Going to experiment with lsp-mode
-
-(use-package ipl-mode
-  :mode "\\.ipl\\'"
-  :load-path "~/local_emacs/ipl-mode/")
-
 
 (use-package lsp-mode
   :ensure t
@@ -290,36 +269,6 @@
 			:server-id 'iplls))
   
   :commands (lsp lsp-deferred))
-
-
-;; (defun ocamlformat-before-save-imandra ()
-;;   "Add this to .emacs to run ocamlformat on the current buffer when saving:"
-;;   (interactive)
-;;   (when (memq major-mode '(imandra-mode)) (ocamlformat)))
-
-;; (use-package imandra-mode
-;;   :ensure nil
-;;   :load-path "~/local_emacs/imandra-mode/"
-;;   :config
-;;   (add-to-list 'auto-mode-alist '("\\.iml[i]?\\'" . imandra-mode))
-;;   (defun ocamlformat-before-save-imandra ()
-;;     "Add this to .emacs to run ocamlformat on the current buffer when saving:"
-;;     (interactive)
-;;     (when (memq major-mode '(imandra-mode)) (ocamlformat)))
-;;   :hook
-;;     (imandra-mode . (lambda() (add-hook 'before-save-hook 'ocamlformat-before-save-imandra))))
-
-
-
-;; (load-file (let ((coding-system-for-read 'utf-8))
-                ;; (shell-command-to-string "agda-mode locate")))
-
-
-
-(use-package lsp-tailwindcss
-  :after lsp-mode
-  :init
-  (setq lsp-tailwindcss-add-on-mode t))
 
 (use-package yasnippet                 
   :ensure t
