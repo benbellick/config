@@ -73,7 +73,8 @@
 				  (project-shell "Shell")
 				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m)
-				  (rg-project "Ripgrep" ?R)))
+				  (rg-project "Ripgrep" ?R))
+	project-vc-extra-root-markers '(".project.el"))
   :bind ("C-x p R" . rg-project))
 
 (use-package prog-mode
@@ -249,6 +250,26 @@
   :hook
   (c++-mode . start-eglot-if-compile-commands-present))
 
+(use-package eglot
+  :bind (:map eglot-mode-map
+	      ("C-c l a" . eglot-code-actions)
+	      ("C-c l r" . eglot-rename)
+	      ("C-c l h" . eldoc)
+	      ("C-c l f" . eglot-format)
+	      ("C-c l F" . eglot-format-buffer)
+	      ("C-c l d" . xref-find-definitions-at-mouse)
+	      ("C-c l R" . eglot-reconnect))
+  :config
+  (add-hook 'eglot-mode-hook (lambda ()
+                            (add-hook 'before-save-hook
+                                      'eglot-format nil t)))
+  (add-to-list 'eglot-server-programs
+               `(python-mode
+                 . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
+                                          "jedi-language-server"
+                                          "pylsp")))))
+
+
 (use-package lsp-mode
   :ensure t
   :init
@@ -261,12 +282,7 @@
          (tuareg-mode . lsp-deferred))
          ;; if you want which-key integration
   ;; (lsp-mode . lsp-enable-which-key-integration))
-  :config
-  (add-to-list 'lsp-language-id-configuration '(ipl-mode . "ipl"))
-  (lsp-register-client (make-lsp-client
-			:new-connection (lsp-stdio-connection "/Users/benjaminbellick/work/ipl/ipl-vscode/xtext-server/bin/ipl-server")
-			:activation-fn (lsp-activate-on "ipl")
-			:server-id 'iplls))
+  )
   
   :commands (lsp lsp-deferred))
 
@@ -280,7 +296,15 @@
 
 
 (use-package gptel
-  :ensure t)
+  :ensure t
+  :config
+  (setq auth-sources '("~/.authinfo"))
+  (gptel-make-anthropic "Claude"
+    :stream t
+    :key 'gptel-api-key))
+
+(use-package gptel-integrations
+  :after gptel)
 
 (use-package nix-mode
   :ensure t)
@@ -326,8 +350,14 @@
   (require 'dap-lldb)) 
 
 
-(use-package lsp-java
-  :hook (java-mode-hook . lsp))
+;; (use-package lsp-java
+;;   :hook (java-mode . lsp)
+;;   :config
+;;   (setq lsp-java-format-settings-url "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml"
+;;         lsp-java-format-settings-profile "GoogleStyle"
+;;         indent-tabs-mode nil
+;;         tab-width 2
+;;         c-basic-offset 2))
 
 ;; Need vterm for claude-code below
 (use-package vterm :ensure t)
@@ -345,6 +375,14 @@
   :vc (:url "git@github.com:benbellick/twen-twen-tw.el.git" :rev :newest)
   :config
   (twen-twen-tw-mode 1))
+
+(use-package tree-sitter-langs
+  :ensure t)
+(tree-sitter-require 'typescript)
+
+(use-package compile-multi
+  :ensure t
+  :bind ("C-c m" . compile-multi))
 
 ;; This MUST be the last item in the list
 (use-package envrc
