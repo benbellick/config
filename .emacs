@@ -74,7 +74,8 @@
 				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m)
 				  (rg-project "Ripgrep" ?R))
-	project-vc-extra-root-markers '(".project.el"))
+	project-vc-extra-root-markers '(".project.el")
+	project-compilation-buffer-name-function #'project-prefixed-buffer-name)
   :bind ("C-x p R" . rg-project))
 
 (use-package prog-mode
