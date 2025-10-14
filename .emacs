@@ -101,8 +101,6 @@
 ;; (use-package forge
   ;; :after magit)
 
-(setq auth-sources '("~/.authinfo.gpg"))
-
 (use-package hl-todo
   :ensure t
   :hook ((prog-mode . hl-todo-mode)))
@@ -295,11 +293,11 @@
   (setq yas-wrap-around-region t)
   :hook ((prog-mode . yas-minor-mode)))
 
+(use-package auth-source)
 
 (use-package gptel
   :ensure t
   :config
-  (setq auth-sources '("~/.authinfo"))
   (gptel-make-anthropic "Claude"
     :stream t
     :key 'gptel-api-key))
@@ -350,6 +348,9 @@
   (dap-ui-mode 1)
   (require 'dap-lldb)) 
 
+(use-package editorconfig
+  :ensure t
+  :config (editorconfig-mode 1))
 
 ;; (use-package lsp-java
 ;;   :hook (java-mode . lsp)
@@ -384,6 +385,40 @@
 (use-package compile-multi
   :ensure t
   :bind ("C-c m" . compile-multi))
+
+
+(use-package shell-maker
+  :ensure t)
+
+(use-package acp
+  :vc (:url "https://github.com/xenodium/acp.el"))
+
+(use-package agent-shell
+  :vc (:url "https://github.com/xenodium/agent-shell")
+  :config
+  (setq agent-shell-anthropic-authentication
+        (agent-shell-anthropic-make-authentication :login t)))
+
+;; for eat terminal backend:
+(use-package eat :ensure t)
+
+(use-package monet
+  :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+
+;; install claude-code.el
+(use-package claude-code :ensure t
+  :vc (:url "https://github.com/stevemolitor/claude-code.el" :rev :newest)
+  :config
+  ;; optional IDE integration with Monet
+  (add-hook 'claude-code-process-environment-functions #'monet-start-server-function)
+  (monet-mode 1)
+
+  (claude-code-mode)
+  :bind-keymap ("C-c c" . claude-code-command-map)
+
+  ;; Optionally define a repeat map so that "M" will cycle thru Claude auto-accept/plan/confirm modes after invoking claude-code-cycle-mode / C-c M.
+  :bind
+  (:repeat-map my-claude-code-map ("M" . claude-code-cycle-mode)))
 
 ;; This MUST be the last item in the list
 (use-package envrc
