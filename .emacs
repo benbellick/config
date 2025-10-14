@@ -6,6 +6,9 @@
 (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 
+;; My experimental packages
+(add-to-list 'load-path "~/config/emacs/packages")
+
 (use-package emacs
   :config
     (menu-bar-mode -1)
@@ -77,6 +80,10 @@
 	project-vc-extra-root-markers '(".project.el")
 	project-compilation-buffer-name-function #'project-prefixed-buffer-name)
   :bind ("C-x p R" . rg-project))
+
+(use-package project-recipe
+  :after project
+  :bind ("C-x p t" . project-compile-recipe))
 
 (use-package prog-mode
   :hook (prog-mode . display-line-numbers-mode)
@@ -381,11 +388,6 @@
 (use-package tree-sitter-langs
   :ensure t)
 (tree-sitter-require 'typescript)
-
-(use-package compile-multi
-  :ensure t
-  :bind ("C-c m" . compile-multi))
-
 
 (use-package shell-maker
   :ensure t)
