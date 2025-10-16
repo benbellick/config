@@ -76,10 +76,12 @@
 				  (project-shell "Shell")
 				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m)
-				  (rg-project "Ripgrep" ?R))
+				  (rg-project "Ripgrep" ?R)
+				  (justl-exec-recipe-in-dir "Just" ?j))
 	project-vc-extra-root-markers '(".project.el")
 	project-compilation-buffer-name-function #'project-prefixed-buffer-name)
-  :bind ("C-x p R" . rg-project))
+  :bind (("C-x p R" . rg-project)
+	 ("C-x p j" . justl-exec-recipe-in-dir)))
 
 (use-package project-recipe
   :after project
@@ -406,6 +408,13 @@
 
 (use-package monet
   :vc (:url "https://github.com/stevemolitor/monet" :rev :newest))
+
+(use-package just-mode
+  :ensure t)
+
+(use-package justl
+  :ensure t)
+
 
 ;; install claude-code.el
 (use-package claude-code :ensure t
