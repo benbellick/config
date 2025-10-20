@@ -55,6 +55,12 @@
     (setq read-process-output-max (* 1024 1024 ))
     (setq gc-cons-threshold 100000000)) ;;1mb
 
+(use-package grep
+  :config
+  (setq grep-find-ignored-files
+      (append grep-find-ignored-files
+              '("*.tar.gz" "*.gz" "*.zip" "*.jar" "*.class" "*.pyc"))))
+
 ;;No more accidental kill emacs while using merlin
 (global-unset-key (kbd "C-x C-c"))
 (global-set-key (kbd "C-x C-q") 'save-buffers-kill-terminal)
