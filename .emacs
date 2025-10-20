@@ -75,6 +75,20 @@
 ;;Add ability to switch to buffer when switching file
 (use-package project
   :config
+  (defun justl-in-project ()
+    "Execute justl recipe in current project."
+    (interactive)
+    (let* ((project (project-current t))
+           (default-directory (project-root project)))
+      (call-interactively #'justl-exec-recipe-in-dir)))
+
+  (defun justl-list-in-project ()
+    "List justl recipes in current project."
+    (interactive)
+    (let* ((project (project-current t))
+           (default-directory (project-root project)))
+      (call-interactively #'justl)))
+
   (setq project-switch-commands '((project-find-file "Find file")
 				  (project-switch-to-buffer "Find buffer")
 				  (project-find-regexp "Find regexp")
@@ -83,11 +97,14 @@
 				  (project-kill-buffers "Kill all buffers")
 				  (magit-project-status "Magit" ?m)
 				  (rg-project "Ripgrep" ?R)
-				  (justl-exec-recipe-in-dir "Just" ?j))
+				  (justl-in-project "Just" ?j)
+				  (justl-list-in-project "Just list" ?J))
 	project-vc-extra-root-markers '(".project.el")
-	project-compilation-buffer-name-function #'project-prefixed-buffer-name)
+	project-compilation-buffer-name-function #'project-prefixed-buffer-name
+	project-vc-ignores '("*.tar.gz"))
   :bind (("C-x p R" . rg-project)
-	 ("C-x p j" . justl-exec-recipe-in-dir)))
+	 ("C-x p j" . my-justl-in-project)
+	 ("C-x p J" . my-justl-list-in-project)))
 
 (use-package project-recipe
   :after project
