@@ -307,6 +307,11 @@
   (add-to-list 'eglot-server-programs
                '(protobuf-mode . ("buf" "lsp" "serve"))))
 
+(use-package jarchive
+  :ensure t
+  :after eglot
+  :config
+  (jarchive-setup))
 
 
 (use-package lsp-mode
