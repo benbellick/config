@@ -291,14 +291,22 @@
 	      ("C-c l d" . xref-find-definitions-at-mouse)
 	      ("C-c l R" . eglot-reconnect))
   :config
-  (add-hook 'eglot-mode-hook (lambda ()
-                            (add-hook 'before-save-hook
-                                      'eglot-format nil t)))
+  ;; Format on save when eglot is active
+  (add-hook 'eglot-mode-hook
+            (lambda ()
+              (add-hook 'before-save-hook #'eglot-format nil t)))
+
+  ;; Python LSP: try pyright → jedi → pylsp
   (add-to-list 'eglot-server-programs
                `(python-mode
                  . ,(eglot-alternatives '(("pyright-langserver" "--stdio")
                                           "jedi-language-server"
-                                          "pylsp")))))
+                                          "pylsp"))))
+
+  ;; Protobuf LSP: buf
+  (add-to-list 'eglot-server-programs
+               '(protobuf-mode . ("buf" "lsp" "serve"))))
+
 
 
 (use-package lsp-mode
@@ -371,6 +379,12 @@
 
 (use-package rg
   :ensure t)
+
+(use-package protobuf-mode
+  :ensure t
+  :mode ("\\.proto\\'" . protobuf-mode))
+
+
 
 (use-package dap-mode
   :ensure t
