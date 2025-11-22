@@ -74,6 +74,7 @@
 
 ;;Add ability to switch to buffer when switching file
 (use-package project
+  :after justl
   :config
   (defun justl-in-project ()
     "Execute justl recipe in current project."
@@ -103,8 +104,8 @@
 	project-compilation-buffer-name-function #'project-prefixed-buffer-name
 	project-vc-ignores '("*.tar.gz"))
   :bind (("C-x p R" . rg-project)
-	 ("C-x p j" . my-justl-in-project)
-	 ("C-x p J" . my-justl-list-in-project)))
+	 ("C-x p j" . justl-in-project)
+	 ("C-x p J" . justl-list-in-project)))
 
 (use-package project-recipe
   :after project
@@ -128,7 +129,16 @@
 	 ("M-s" . flymake-show-project-diagnostics)))
 
 (use-package magit
-  :ensure t)
+  :ensure t
+  :config
+  (put 'magit-refs-sections-hook 'safe-local-variable 'listp)
+  (put 'magit-status-headers-hook 'safe-local-variable 'listp)
+  (put 'magit-status-sections-hook 'safe-local-variable 'listp))
+
+(use-package git-link
+  :ensure t
+  :config
+  (setq git-link-open-in-browser t))
 
 ;; (use-package forge
   ;; :after magit)
