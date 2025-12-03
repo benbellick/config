@@ -153,6 +153,10 @@
   :config
     (setq markdown-fontify-code-blocks-natively t)) ; syntax highlight codeblocks
 
+(use-package antlr-mode
+  :ensure t
+  :mode "\\.g4\\'")
+
 (use-package haskell-mode
   :ensure t
   :config
