@@ -60,6 +60,11 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Make only the changes requested, avoid "improvements" beyond scope
 - No need for time estimates in plans
 
+## File Operations
+
+- Strongly prefer using Write/Edit tools directly over shell heredocs (`cat > file << 'EOF'`)
+- Only use heredocs when there's a good reason (e.g., complex shell scripts that need inline execution)
+
 ## Version Control
 
 - Do not commit code unless explicitly asked
