@@ -2,6 +2,8 @@
 alias edae="emacs --daemon"
 # open up running emacs daemon
 alias ec="emacsclient -c -a '' -n"
+# set emacs client as editor
+export EDITOR=ec
 
 #cd into git parent directory
 cg() {
