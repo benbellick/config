@@ -37,3 +37,6 @@ alias wk='watch kubectl'
 
 #use direnv
 # eval "$(direnv hook zsh)"
+
+# OpenCode config directory
+export OPENCODE_CONFIG_DIR="$HOME/config/ai/opencode"
