@@ -133,7 +133,8 @@
   :config
   (put 'magit-refs-sections-hook 'safe-local-variable 'listp)
   (put 'magit-status-headers-hook 'safe-local-variable 'listp)
-  (put 'magit-status-sections-hook 'safe-local-variable 'listp))
+  (put 'magit-status-sections-hook 'safe-local-variable 'listp)
+  (setq magit-diff-refine-hunk t))
 
 (use-package git-link
   :ensure t
