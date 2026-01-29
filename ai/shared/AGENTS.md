@@ -53,6 +53,12 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Ask questions when requirements are ambiguous
 - Don't over-explain obvious changes
 
+## Documentation and Writing Style
+
+- Never use the pattern `**Term**: description` in bullet lists
+- Write naturally, with inline links where helpful
+- Keep list items clear and readable
+
 ## Planning and Execution
 
 - Use todo lists for multi-step tasks to track progress
