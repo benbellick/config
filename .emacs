@@ -74,7 +74,7 @@
 
 ;;Add ability to switch to buffer when switching file
 (use-package project
-  :after justl
+  :after (justl rg)
   :config
   (defun justl-in-project ()
     "Execute justl recipe in current project."
@@ -332,23 +332,6 @@
   :after eglot
   :config
   (jarchive-setup))
-
-
-(use-package lsp-mode
-  :ensure t
-  :init
-  ;; set prefix for lsp-command-keymap (few alternatives - "C
-  (setq lsp-keymap-prefix "s-l")
-  ;; :config (define-key lsp-mode-map (kbd "s-l") nil)
-  :bind-keymap ("s-l" . lsp-command-map)  
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (reason-mode . lsp-deferred)
-         (tuareg-mode . lsp-deferred))
-         ;; if you want which-key integration
-  ;; (lsp-mode . lsp-enable-which-key-integration))
-  )
-  
-  :commands (lsp lsp-deferred))
 
 (use-package yasnippet                 
   :ensure t
