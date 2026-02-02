@@ -1,4 +1,7 @@
 {
   "model": "opusplan",
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "enabledPlugins": {
+    "atlassian@claude-plugins-official": true
+  }
 }

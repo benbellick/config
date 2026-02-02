@@ -1,6 +1,7 @@
 # Claude runtime data
 .claude.json
 .claude.json.backup
+.claude.json.backup.*
 cache/
 debug/
 history.jsonl
@@ -8,3 +9,5 @@ plugins/
 projects/
 statsig/
 todos/
+stats-cache.json
+.credentials.json
