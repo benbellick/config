@@ -80,6 +80,11 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Use conventional commit format (e.g., `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`)
 - Include scope when relevant (e.g., `feat(auth):`, `fix(api):`)
 
+## Git History
+
+- Never rewrite git history (amend, rebase, force push) unless explicitly asked
+- Prefer new commits over amending existing ones
+
 ## Pull Requests
 
 - PR descriptions should be concise, like a good commit message

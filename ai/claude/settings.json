@@ -1,7 +1,7 @@
 {
-  "model": "opusplan",
-  "alwaysThinkingEnabled": true,
+  "model": "sonnet[1m]",
   "enabledPlugins": {
     "atlassian@claude-plugins-official": true
-  }
+  },
+  "alwaysThinkingEnabled": true
 }
