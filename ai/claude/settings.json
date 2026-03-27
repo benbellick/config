@@ -1,7 +1,10 @@
 {
-  "model": "sonnet[1m]",
+  "model": "opus[1m]",
   "enabledPlugins": {
-    "atlassian@claude-plugins-official": true
+    "atlassian@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "medium"
 }

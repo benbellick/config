@@ -479,3 +479,14 @@
 (use-package envrc
   :ensure t
   :hook (after-init . envrc-global-mode))
+
+(use-package org-present
+  :ensure t
+  :hook
+  ((org-present-mode . (lambda ()
+                         (org-present-big)
+                         (org-display-inline-images)
+                         (org-cycle-hide-drawers 'all)))
+   (org-present-mode-quit . (lambda ()
+                              (org-present-small)
+                              (org-remove-inline-images)))))
