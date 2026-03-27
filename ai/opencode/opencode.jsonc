@@ -157,7 +157,19 @@
       "bazel info *": "allow",
       "bazel version": "allow",
       "bazel help *": "allow",
-      "buildifier *": "allow"
+      "buildifier *": "allow",
+
+      // bzl (Bazel alias)
+      "bzl build *": "allow",
+      "bzl test *": "allow",
+      "bzl run *": "allow",
+      "bzl query *": "allow",
+      "bzl cquery *": "allow",
+      "bzl aquery *": "allow",
+      "bzl info": "allow",
+      "bzl info *": "allow",
+      "bzl version": "allow",
+      "bzl help *": "allow"
     }
   },
   "mcp": {
