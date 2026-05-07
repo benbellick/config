@@ -1,5 +1,6 @@
 import { complete } from "@earendil-works/pi-ai";
-import { InteractiveMode, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { CustomEditor, InteractiveMode, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 
 type TextBlock = {
 	type?: string;
@@ -36,6 +37,8 @@ type InteractiveModeWithInternals = InteractiveMode & {
 
 const MAX_CONVERSATION_CHARS = 12_000;
 
+let currentSessionName: string | undefined;
+
 const originalHandleNameCommandSymbol = Symbol.for("ben.pi.auto-name.originalHandleNameCommand");
 const interactiveModePrototype = InteractiveMode.prototype as typeof InteractiveMode.prototype & {
 	[originalHandleNameCommandSymbol]?: (text: string) => void;
@@ -44,6 +47,15 @@ const interactiveModePrototype = InteractiveMode.prototype as typeof Interactive
 
 interactiveModePrototype[originalHandleNameCommandSymbol] ??= interactiveModePrototype.handleNameCommand;
 const originalHandleNameCommand = interactiveModePrototype[originalHandleNameCommandSymbol];
+
+const originalEditorRenderSymbol = Symbol.for("ben.pi.auto-name.originalEditorRender");
+const customEditorPrototype = CustomEditor.prototype as typeof CustomEditor.prototype & {
+	[originalEditorRenderSymbol]?: (width: number) => string[];
+	render: (width: number) => string[];
+};
+
+customEditorPrototype[originalEditorRenderSymbol] ??= customEditorPrototype.render;
+const originalEditorRender = customEditorPrototype[originalEditorRenderSymbol];
 
 const textParts = (content: unknown): string[] => {
 	if (typeof content === "string") {
@@ -98,6 +110,15 @@ const cleanName = (name: string): string => {
 		.trim();
 
 	return cleaned.length > 60 ? cleaned.slice(0, 57).trimEnd() + "..." : cleaned;
+};
+
+const sessionNameBorder = (name: string, width: number, color: (text: string) => string): string => {
+	const sanitizedName = name.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim();
+	const maxLabelWidth = Math.max(1, width - 4);
+	const bracketedName = `[${sanitizedName}]`;
+	const label = ` ${truncateToWidth(bracketedName, maxLabelWidth, "…")} `;
+	const remainingWidth = Math.max(0, width - 1 - visibleWidth(label));
+	return color(`─${label}${"─".repeat(remainingWidth)}`);
 };
 
 const generateName = async (mode: InteractiveModeWithInternals): Promise<string> => {
@@ -155,11 +176,28 @@ const generateName = async (mode: InteractiveModeWithInternals): Promise<string>
 	return cleanName(name || fallbackName(conversation));
 };
 
-export default function (_pi: ExtensionAPI) {
+export default function (pi: ExtensionAPI) {
+	pi.on("session_start", async (_event, ctx) => {
+		currentSessionName = ctx.sessionManager.getSessionName();
+	});
+
+	customEditorPrototype.render = function (width: number) {
+		const lines = originalEditorRender.call(this, width);
+		if (!currentSessionName || lines.length === 0) {
+			return lines;
+		}
+
+		const editor = this as CustomEditor & { borderColor?: (text: string) => string };
+		const borderColor = editor.borderColor ?? ((text: string) => text);
+		return [sessionNameBorder(currentSessionName, width, borderColor), ...lines.slice(1)];
+	};
+
 	interactiveModePrototype.handleNameCommand = function (text: string) {
 		const name = text.replace(/^\/name\s*/, "").trim();
 		if (name) {
-			return originalHandleNameCommand.call(this, text);
+			const result = originalHandleNameCommand.call(this, text);
+			currentSessionName = (this as InteractiveModeWithInternals).sessionManager.getSessionName();
+			return result;
 		}
 
 		const mode = this as InteractiveModeWithInternals;
@@ -168,6 +206,7 @@ export default function (_pi: ExtensionAPI) {
 		void generateName(mode)
 			.then((generatedName) => {
 				mode.session.setSessionName(generatedName);
+				currentSessionName = generatedName;
 				mode.showStatus(`Session name set: ${generatedName}`);
 			})
 			.catch((error) => {
