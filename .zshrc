@@ -41,3 +41,4 @@ alias wk='watch kubectl'
 # AI tool config directories
 export OPENCODE_CONFIG_DIR="$HOME/config/ai/opencode"
 export CLAUDE_CONFIG_DIR="$HOME/config/ai/claude"
+export PI_CODING_AGENT_DIR="$HOME/config/ai/pi"
