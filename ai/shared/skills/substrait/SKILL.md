@@ -20,6 +20,18 @@ Substrait is a format for describing compute operations on structured data. It p
 - Python: https://github.com/substrait-io/substrait-py
 - Rust: https://github.com/substrait-io/substrait-rs
 
+### Local Source Checkouts
+
+When source code is needed, local clones may be available under `~/code`:
+
+- `~/code/substrait`
+- `~/code/substrait-go`
+- `~/code/substrait-java`
+- `~/code/substrait-py`
+- `~/code/substrait-rs`
+
+Read the code locally when it is available and would be useful.
+
 ## Core Concepts
 
 ### Type System
