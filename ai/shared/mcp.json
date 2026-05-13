@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "datadog-google-workspace": {
+      "url": "https://google-workspace-mcp-server-834963730936.us-central1.run.app/mcp"
+    },
+    "atlassian": {
+      "type": "http",
+      "url": "https://mcp.atlassian.com/v1/mcp"
+    },
+    "ddci-mcp-prod": {
+      "auth": "oauth",
+      "oauth": {
+        "clientId": "mcp-common"
+      },
+      "url": "https://ddci-mcp.mcp.us1.ddbuild.io/internal/mcp"
+    },
+    "datadog": {
+      "type": "http",
+      "url": "https://mcp.datadoghq.com/api/unstable/mcp-server/mcp?toolsets=core,software-delivery,error-tracking,profiling,widgets,data-observability,workflows,observability-graph,security,audit-trail,governance"
+    }
+  }
+}

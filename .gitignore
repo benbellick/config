@@ -1,0 +1,22 @@
+# Pi local/private state
+ai/pi/auth.json
+ai/pi/mcp-cache.json
+ai/pi/mcp-npx-cache.json
+ai/pi/mcp-onboarding.json
+ai/pi/mcp-oauth/
+ai/pi/mcp-oauth-backups/
+ai/pi/sessions/
+
+# Claude local state
+ai/claude/file-history/
+ai/claude/mcp-needs-auth-cache.json
+ai/claude/paste-cache/
+ai/claude/plans/
+ai/claude/policy-limits.json
+ai/claude/tasks/
+ai/claude/telemetry/
+ai/claude/usage-data/
+
+# OpenCode local/generated state
+ai/opencode/dd.json
+ai/opencode/package-lock.json
