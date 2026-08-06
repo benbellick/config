@@ -1,9 +1,57 @@
 import type { ExtensionAPI, ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
-import { loadMcpConfig } from "/opt/homebrew/lib/node_modules/pi-mcp-adapter/config.ts";
-import { authenticate, removeAuth, supportsOAuth } from "/opt/homebrew/lib/node_modules/pi-mcp-adapter/mcp-auth-flow.ts";
-import type { McpConfig } from "/opt/homebrew/lib/node_modules/pi-mcp-adapter/types.ts";
+import { realpathSync } from "node:fs";
+import { createRequire } from "node:module";
+import { dirname, join } from "node:path";
+import { pathToFileURL } from "node:url";
 
-const oauthServerNames = (config: McpConfig): string[] =>
+type McpServerDefinition = {
+	url?: string;
+	[key: string]: unknown;
+};
+
+type McpConfig = {
+	mcpServers: Record<string, McpServerDefinition>;
+};
+
+type McpAdapter = {
+	loadMcpConfig(configPath?: string, cwd?: string): McpConfig;
+	authenticate(
+		serverName: string,
+		url: string,
+		definition: McpServerDefinition,
+	): Promise<string>;
+	removeAuth(serverName: string): Promise<void>;
+	supportsOAuth(definition: McpServerDefinition): boolean;
+};
+
+const loadMcpAdapter = async (): Promise<McpAdapter> => {
+	const require = createRequire(import.meta.url);
+	const agentDirectory = process.env.PI_CODING_AGENT_DIR ?? join(process.env.HOME ?? "", ".pi", "agent");
+	const resolutionPaths = [join(agentDirectory, "npm")];
+	const cliPath = process.argv[1] ? realpathSync(process.argv[1]) : undefined;
+	const globalNodeModules = cliPath?.match(/^(.*[\\/]node_modules)[\\/]/)?.[1];
+	if (globalNodeModules) {
+		resolutionPaths.push(dirname(globalNodeModules));
+	}
+	const configPath = require.resolve("pi-mcp-adapter/config.ts", { paths: resolutionPaths });
+	const authPath = require.resolve("pi-mcp-adapter/mcp-auth-flow.ts", { paths: resolutionPaths });
+	const [configModule, authModule] = await Promise.all([
+		import(pathToFileURL(configPath).href),
+		import(pathToFileURL(authPath).href),
+	]);
+
+	return {
+		loadMcpConfig: configModule.loadMcpConfig,
+		authenticate: authModule.authenticate,
+		removeAuth: authModule.removeAuth,
+		supportsOAuth: authModule.supportsOAuth,
+	};
+};
+
+const oauthServerNames = (
+	config: McpConfig,
+	supportsOAuth: McpAdapter["supportsOAuth"],
+): string[] =>
 	Object.entries(config.mcpServers)
 		.filter(([, definition]) => supportsOAuth(definition))
 		.map(([name]) => name)
@@ -12,9 +60,10 @@ const oauthServerNames = (config: McpConfig): string[] =>
 const selectServer = async (
 	requestedServer: string,
 	config: McpConfig,
+	supportsOAuth: McpAdapter["supportsOAuth"],
 	ctx: ExtensionCommandContext,
 ): Promise<string | undefined> => {
-	const serverNames = oauthServerNames(config);
+	const serverNames = oauthServerNames(config, supportsOAuth);
 
 	if (requestedServer) {
 		if (!config.mcpServers[requestedServer]) {
@@ -36,12 +85,14 @@ const selectServer = async (
 	return ctx.ui.select("Reset authentication for which MCP server?", serverNames);
 };
 
-export default function (pi: ExtensionAPI) {
+export default async function (pi: ExtensionAPI) {
+	const { authenticate, loadMcpConfig, removeAuth, supportsOAuth } = await loadMcpAdapter();
+
 	pi.registerCommand("mcp-reauth", {
 		description: "Reset and reauthenticate an OAuth MCP server",
 		getArgumentCompletions: (prefix) => {
 			const config = loadMcpConfig(undefined, process.cwd());
-			const matches = oauthServerNames(config)
+			const matches = oauthServerNames(config, supportsOAuth)
 				.filter((name) => name.startsWith(prefix))
 				.map((name) => ({ value: name, label: name }));
 			return matches.length > 0 ? matches : null;
@@ -52,7 +103,7 @@ export default function (pi: ExtensionAPI) {
 			}
 
 			const config = loadMcpConfig(undefined, ctx.cwd);
-			const serverName = await selectServer(args.trim(), config, ctx);
+			const serverName = await selectServer(args.trim(), config, supportsOAuth, ctx);
 			if (!serverName) {
 				return;
 			}
