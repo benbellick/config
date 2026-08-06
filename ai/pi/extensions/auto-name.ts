@@ -1,6 +1,10 @@
 import { execFile } from "node:child_process";
-import { complete } from "@earendil-works/pi-ai";
-import { CustomEditor, InteractiveMode, type ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import {
+	CustomEditor,
+	InteractiveMode,
+	type ExtensionAPI,
+	type ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
 import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 
 type TextBlock = {
@@ -16,27 +20,6 @@ type SessionEntry = {
 	};
 };
 
-type InteractiveModeWithInternals = InteractiveMode & {
-	sessionManager: {
-		getBranch(): SessionEntry[];
-		getSessionName(): string | undefined;
-		getCwd(): string;
-	};
-	session: {
-		state: { model?: unknown; thinkingLevel?: string };
-		modelRegistry: {
-			getApiKeyAndHeaders(model: unknown): Promise<
-				| { ok: true; apiKey?: string; headers?: Record<string, string> }
-				| { ok: false; error: string }
-			>;
-		};
-		setSessionName(name: string): void;
-	};
-	showStatus(message: string): void;
-	showWarning(message: string): void;
-	showError(message: string): void;
-};
-
 const MAX_CONVERSATION_CHARS = 12_000;
 
 type SessionAttachments = {
@@ -46,6 +29,7 @@ type SessionAttachments = {
 	prUrl?: string;
 };
 
+let currentContext: ExtensionContext | undefined;
 let currentSessionName: string | undefined;
 let currentAttachments: SessionAttachments = {};
 
@@ -186,56 +170,56 @@ const discoverAttachments = async (cwd: string, sessionName: string | undefined)
 	};
 };
 
-const refreshAttachments = async (mode: Pick<InteractiveModeWithInternals, "sessionManager"> & { cwd?: string }) => {
-	currentAttachments = await discoverAttachments(mode.cwd ?? mode.sessionManager.getCwd(), currentSessionName);
+const refreshAttachments = async (cwd: string) => {
+	currentAttachments = await discoverAttachments(cwd, currentSessionName);
 };
 
-const generateName = async (mode: InteractiveModeWithInternals): Promise<string> => {
-	const conversation = conversationText(mode.sessionManager.getBranch());
+const generateName = async (ctx: ExtensionContext): Promise<string> => {
+	const conversation = conversationText(ctx.sessionManager.getBranch());
 	if (!conversation) {
 		throw new Error("No conversation text found");
 	}
 
-	const model = mode.session.state.model;
-	if (!model) {
+	const model = ctx.model;
+	const provider = model ? ctx.modelRegistry.getProvider(model.provider) : undefined;
+	const auth = model ? await ctx.modelRegistry.getProviderAuth(model.provider) : undefined;
+	if (!model || !provider || !auth) {
 		return fallbackName(conversation);
 	}
 
-	const auth = await mode.session.modelRegistry.getApiKeyAndHeaders(model);
-	if (!auth.ok || !auth.apiKey) {
-		return fallbackName(conversation);
-	}
-
-	const response = await complete(
-		model,
-		{
-			messages: [
-				{
-					role: "user" as const,
-					content: [
-						{
-							type: "text" as const,
-							text: [
-								"Generate a short session name for this coding-agent conversation.",
-								"Return only the name, no quotes or punctuation.",
-								"Use 2-6 words, title case or sentence case.",
-								"",
-								"<conversation>",
-								conversation,
-								"</conversation>",
-							].join("\n"),
-						},
-					],
-					timestamp: Date.now(),
-				},
-			],
-		},
-		{
-			apiKey: auth.apiKey,
-			headers: auth.headers,
-			reasoningEffort: "minimal",
-		},
-	);
+	const response = await provider
+		.streamSimple(
+			model,
+			{
+				messages: [
+					{
+						role: "user" as const,
+						content: [
+							{
+								type: "text" as const,
+								text: [
+									"Generate a short session name for this coding-agent conversation.",
+									"Return only the name, no quotes or punctuation.",
+									"Use 2-6 words, title case or sentence case.",
+									"",
+									"<conversation>",
+									conversation,
+									"</conversation>",
+								].join("\n"),
+							},
+						],
+						timestamp: Date.now(),
+					},
+				],
+			},
+			{
+				...auth.auth,
+				env: auth.env,
+				reasoningEffort: "minimal",
+				signal: ctx.signal,
+			},
+		)
+		.result();
 
 	const name = response.content
 		.filter((part): part is { type: "text"; text: string } => part.type === "text")
@@ -247,8 +231,18 @@ const generateName = async (mode: InteractiveModeWithInternals): Promise<string>
 
 export default function (pi: ExtensionAPI) {
 	pi.on("session_start", async (_event, ctx) => {
-		currentSessionName = ctx.sessionManager.getSessionName();
+		currentContext = ctx;
+		currentSessionName = pi.getSessionName();
 		currentAttachments = await discoverAttachments(ctx.cwd, currentSessionName);
+	});
+
+	pi.on("session_info_changed", (event, ctx) => {
+		currentSessionName = event.name;
+		void refreshAttachments(ctx.cwd);
+	});
+
+	pi.on("session_shutdown", () => {
+		currentContext = undefined;
 	});
 
 	customEditorPrototype.render = function (width: number) {
@@ -265,30 +259,27 @@ export default function (pi: ExtensionAPI) {
 	interactiveModePrototype.handleNameCommand = function (text: string) {
 		const name = text.replace(/^\/name\s*/, "").trim();
 		if (name) {
-			const result = originalHandleNameCommand.call(this, text);
-			const mode = this as InteractiveModeWithInternals;
-			currentSessionName = mode.sessionManager.getSessionName();
-			void refreshAttachments(mode);
-			return result;
+			return originalHandleNameCommand.call(this, text);
 		}
 
-		const mode = this as InteractiveModeWithInternals;
-		mode.showStatus("Generating session name...");
+		const ctx = currentContext;
+		if (!ctx) {
+			return;
+		}
 
-		void generateName(mode)
+		ctx.ui.notify("Generating session name...", "info");
+		void generateName(ctx)
 			.then((generatedName) => {
-				mode.session.setSessionName(generatedName);
-				currentSessionName = generatedName;
-				void refreshAttachments(mode);
-				mode.showStatus(`Session name set: ${generatedName}`);
+				pi.setSessionName(generatedName);
+				ctx.ui.notify(`Session name set: ${generatedName}`, "info");
 			})
 			.catch((error) => {
-				const currentName = mode.sessionManager.getSessionName();
+				const currentName = pi.getSessionName();
 				if (currentName) {
-					mode.showStatus(`Session name: ${currentName}`);
+					ctx.ui.notify(`Session name: ${currentName}`, "info");
 					return;
 				}
-				mode.showWarning(error instanceof Error ? error.message : String(error));
+				ctx.ui.notify(error instanceof Error ? error.message : String(error), "warning");
 			});
 	};
 }
