@@ -1,65 +1,53 @@
 ---
 name: review-pr-subagent
-description: Review a GitHub pull request by delegating PR, ticket, and diff exploration to a reviewer subagent
+description: Review a GitHub pull request, especially an open-source contribution, by delegating context gathering and checking correctness, API documentation, simplicity, comments, tests, and scope.
 ---
 
-## What This Skill Does
-
-Reviews a GitHub PR using a focused `reviewer` subagent. The parent agent should not pre-gather the PR context. Instead, delegate a self-contained investigation task and have the subagent pull PR metadata, associated ticket context, diff context, and relevant code itself.
+# Review a GitHub PR
 
 ## Workflow
 
-1. Identify the PR target.
-   - If the user provided a PR number or URL, pass it through.
-   - Otherwise, tell the reviewer subagent to discover the PR for the current branch with `gh pr view`.
+1. Resolve the target:
+   - A bare number means that PR in the current repository.
+   - A URL identifies its own repository and PR.
+   - With no target, use the PR for the current branch.
+2. Delegate the review to the `reviewer` subagent with fresh context and the task below. Do not gather context in the parent unless the target is ambiguous.
+3. Return a concise summary that preserves every substantive finding.
 
-2. Delegate directly to the `reviewer` subagent.
-   - Use fresh context by default.
-   - Do not run `gh pr view`, `gh pr diff`, Jira searches, or local diff commands in the parent unless needed to resolve ambiguity.
-   - The subagent should do the exploration itself using `gh`, `git`, available MCP/Jira tools, and local file reads.
+Never edit files or modify GitHub state. Do not post comments or reviews, approve, request changes, merge, or push.
 
-3. Ask the reviewer subagent to return only review feedback.
-   - The reviewer should not edit files.
-   - The reviewer should include enough evidence to make findings actionable.
-
-4. Summarize the subagent output for the user.
-   - Preserve blocking findings and important suggestions.
-   - If there are no substantive issues, say so directly.
-
-## Suggested Subagent Task
-
-Use this as the task text when delegating:
+## Reviewer Task
 
 ```text
-Review this GitHub pull request. Do all exploration yourself and return review feedback only.
+Review this GitHub pull request. Gather all context yourself and return review feedback only.
 
-PR target: <PR number/URL, or "current branch PR">
+PR target: <number, URL, or current branch PR>
 
-You are responsible for gathering context:
-- Use `gh pr view` to get PR number, title, body, author, base branch, head branch, URL, commits, changed files, and review status.
-- Use `gh pr diff` and/or local `git diff <base>...HEAD` to inspect the changes.
-- Fetch the base branch if needed.
-- Inspect relevant files in the repository, not just the patch, when surrounding context matters.
-- Look for an associated ticket or issue from the PR title, body, branch name, commit messages, and linked references.
-- If the ticket is GitHub, use `gh issue view` or related `gh` commands.
-- If the ticket is Jira, use available Jira/MCP tools or accessible CLI/context to read the ticket title, description, comments, status, and acceptance criteria.
-- If another ticket system is referenced, use the available tools or clearly state what could not be accessed.
+A bare number refers to the current repository. A URL identifies its own repository. With no target, discover the current branch's PR.
 
-Review goals:
-- Check whether the implementation matches the PR description and associated ticket requirements.
-- Look for correctness bugs, edge cases, missing or weak tests, risky behavior, regressions, and unnecessary complexity.
-- Prefer actionable findings with file paths and line references when possible.
-- Separate blocking issues from non-blocking suggestions.
-- Do not nitpick style unless it affects readability or maintainability.
+Investigation:
+- Run `gh pr checkout <pr-num>` before reviewing so the local worktree contains the PR's code. Never discard or overwrite existing local changes to do this.
+- Use read-only `gh` and `git` commands to inspect PR metadata, description, commits, changed files, diff, base branch, and review status.
+- Inspect surrounding repository code when the patch alone is insufficient.
+- Find and read linked issues or tickets when accessible.
+- Check that the implementation matches the PR description and linked requirements.
+
+Review standards:
+- Find correctness bugs, regressions, risky behavior, and missed edge cases.
+- Every public function and method should have a short, readable docstring explaining intention rather than implementation.
+- Code should be as simple as reasonably possible. Flag unnecessary complexity; accept essential complexity only when its purpose or justification is clear.
+- Non-obvious logic should have concise explanatory comments. Straightforward code should not be narrated with comments.
+- Tests should cover changed behavior, important edge cases, and regressions while remaining easy to understand. Suggest a clearer structure for hard-to-read tests, or explain why their complexity is unavoidable.
+- The PR should contain one coherent change. Flag unrelated refactors, cleanup, or behavior changes that should be separate.
+- Treat maintainability concerns as substantive, but do not nitpick personal style.
+
+Safety:
 - Do not edit files.
+- Use GitHub only for read-only investigation. Never post comments or reviews, approve, request changes, merge, push, or otherwise modify GitHub state.
 
-Output format:
+Output:
 - Start with a one-sentence verdict.
-- Then list findings grouped by severity.
-- For each finding, include evidence and a suggested fix.
-- If there are no substantive findings, say that clearly and mention any residual risks from inaccessible context.
+- Group findings by severity.
+- Give each finding actionable evidence with file and line references when possible, plus the smallest reasonable fix.
+- If there are no substantive findings, say so and mention any residual risk from inaccessible context.
 ```
-
-## When to Use This Skill
-
-Load this skill when the user asks to review a PR, review the current branch's PR, run a PR review with a subagent, or get review feedback for a GitHub pull request.
