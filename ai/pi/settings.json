@@ -13,5 +13,5 @@
   "extensions": [
     "extensions/*.ts"
   ],
-  "theme": "dark"
+  "theme": "light/dark"
 }
