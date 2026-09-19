@@ -3,8 +3,18 @@
   "enabledPlugins": {
     "atlassian@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
-    "gopls-lsp@claude-plugins-official": true
+    "gopls-lsp@claude-plugins-official": true,
+    "perf-feedback@datadog-claude-plugins": true,
+    "slack@claude-plugins-official": true,
+    "workspace-setup@mrlee-plugins": true
   },
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "medium"
+  "extraKnownMarketplaces": {
+    "mrlee-plugins": {
+      "source": {
+        "source": "git",
+        "url": "git@github.com:DataDog/mrlee-plugins.git"
+      }
+    }
+  },
+  "alwaysThinkingEnabled": true
 }

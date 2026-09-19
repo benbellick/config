@@ -34,6 +34,10 @@ alias k=kubectl
 alias kc='kubectl config use-context'
 alias kcc='kubectl config current-context'
 alias wk='watch kubectl'
+alias ws='ssh -tt workspace-benbellick "tmux new -A -s main"'
+
+alias pupp='pup --org prod'
+alias pups='DD_SITE=ddstaging.datadoghq.com pup --org staging'
 
 #use direnv
 # eval "$(direnv hook zsh)"

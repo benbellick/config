@@ -27,6 +27,7 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Keep functions focused on a single responsibility
 - Prefer small, composable functions over large monolithic ones
 - Group related functionality together
+- Optimize for reviewability, meaning that the PR should be orchtestrated in such a way that the diff is easier for a reviewer to understand
 
 # Testing & Quality
 
@@ -56,6 +57,7 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 ## Documentation and Writing Style
 
 - Never use the pattern `**Term**: description` in bullet lists
+- Avoid writing new sentences in the pattern `<some sentence>: <another sentence>.` Use two separate sentences instead. Preserve existing style when editing nearby text unless the user asks to rewrite it.
 - Write naturally, with inline links where helpful
 - Keep list items clear and readable
 

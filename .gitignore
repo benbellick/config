@@ -1,14 +1,25 @@
+# macOS metadata
+.DS_Store
+
 # Pi local/private state
 ai/pi/auth.json
+ai/pi/cache/
 ai/pi/mcp-cache.json
 ai/pi/mcp-npx-cache.json
 ai/pi/mcp-onboarding.json
 ai/pi/mcp-oauth/
 ai/pi/mcp-oauth-backups/
+ai/pi/missions/
+ai/pi/models-store.json
+ai/pi/models.json
+ai/pi/npm/
+ai/pi/run-history.jsonl
 ai/pi/sessions/
+ai/pi/trust.json
 
 # Claude local state
 ai/claude/file-history/
+ai/claude/session-env/
 ai/claude/mcp-needs-auth-cache.json
 ai/claude/paste-cache/
 ai/claude/plans/

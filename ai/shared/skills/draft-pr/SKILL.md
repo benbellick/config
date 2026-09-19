@@ -48,6 +48,8 @@ Assume reviewers know the repository well, but do not know the specific issue or
 
 Only describe what changed when it helps explain the why. Mention implementation details if they are surprising, non-obvious, or important for reviewers to evaluate the approach. Avoid restating the diff or listing routine code changes.
 
+Do not add a testing or validation summary, including prose such as `Validated with ...`. CI and the PR checks already communicate routine validation. Mention validation evidence only when it is essential to explain the change or a non-obvious compatibility decision, and include it inline rather than under a separate section.
+
 Multiple short paragraphs are fine. Typical patterns:
 - Just the issue reference: `Closes #123`
 - A one-sentence problem-focused summary followed by `Closes #123`

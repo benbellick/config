@@ -1,5 +1,15 @@
-# Scrollback
+# Ghostty scrollback
 keybind = ctrl+shift+u=scroll_page_up
 keybind = ctrl+shift+d=scroll_page_down
 keybind = ctrl+shift+k=scroll_page_fractional:-0.5
 keybind = ctrl+shift+j=scroll_page_fractional:0.5
+
+# Send dedicated escape sequences so tmux can handle its own scrollback,
+# including through SSH.
+keybind = super+shift+u=text:\x1b[99;1u
+keybind = super+shift+d=text:\x1b[99;2u
+keybind = super+shift+k=text:\x1b[99;3u
+keybind = super+shift+j=text:\x1b[99;4u
+
+
+theme = 3024 Day

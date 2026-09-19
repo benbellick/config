@@ -58,6 +58,11 @@ The brag doc lives at `brag.md` in the notes directory. Structure:
 <!-- last-updated: YYYY-MM-DD -->
 # Brag Doc
 
+## Side Projects
+
+### Metrics
+- Dated side-project item (link)
+
 ## 2025
 
 ### Q3
@@ -72,6 +77,14 @@ The brag doc lives at `brag.md` in the notes directory. Structure:
 ##### W2
 - Another item (link)
 ```
+
+### Side Projects
+
+Work done outside Ben's QSEM responsibilities belongs under `## Side Projects`, grouped by domain. In particular, any metrics-related work that does not involve Substrait belongs under `### Metrics`.
+
+Keep side projects entirely separate from the year, quarter, month, and week hierarchy. Do not include them in QSEM month or quarter summaries, and do not connect them to QSEM OKRs. Include the month and year in each side-project item so its timing remains clear.
+
+Metrics work that directly concerns Substrait remains in the normal chronological hierarchy.
 
 ### Content at Each Level
 
@@ -191,10 +204,11 @@ cloudId: datadoghq.atlassian.net
    - Run the GitHub, Jira, and Confluence queries above
    - Collect all items with their dates and source links
 
-3. **If invoked with a manual item argument**, add that to the appropriate week
+3. **If invoked with a manual item argument**, add that to the appropriate chronological or side-project location
 
-4. **Slot new items into weeks** based on their dates
-   - Calculate which quarter, month, and week each item belongs to
+4. **Classify and slot new items** based on their dates
+   - Put non-Substrait metrics work under `Side Projects > Metrics`
+   - Put all other work into the appropriate quarter, month, and week
    - Week 1 of a month starts on the first Monday of that month
 
 5. **Identify clusters** of related work that could percolate up

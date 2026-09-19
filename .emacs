@@ -272,29 +272,9 @@
     (setenv (car var) (cadr var))))
 
 (use-package company
+  :ensure t
   :config (setq company-idle-delay 0.01))
 
-(use-package merlin
-  :if opam-p
-  :load-path (lambda () (expand-file-name "emacs/site-lisp" opam-share))
-  :config (setq merlin-command 'opam)
-  :hook (tuareg-mode . merlin-mode) (merlin-mode . company-mode))
-
-(add-hook 'tuareg-mode-hook
-	  (lambda()
-	    (add-hook 'before-save-hook 'ocamlformat-before-save)))
-
-(use-package cc-mode
-  :config
-  ;; annoying to have this binding as I like having it format via eglot
-  (unbind-key "C-c C-c" c++-mode-map)
-  (defun start-eglot-if-compile-commands-present ()
-    (let* ((pr (project-current t))
-	   (root (project-root pr))) ;; what if project-current is nil?
-      (when (locate-file "compile_commands.json" (list root))
-	(eglot-ensure))))
-  :hook
-  (c++-mode . start-eglot-if-compile-commands-present))
 
 (use-package eglot
   :bind (:map eglot-mode-map
@@ -375,9 +355,9 @@
     :ensure t)
 
 
-(require 'dap-lldb)
-(require 'dap-cpptools)
-(setq dap-lldb-debug-program '("/Library/Developer/CommandLineTools/usr/bin/lldb-dap"))
+;; (require 'dap-lldb)
+;; (require 'dap-cpptools)
+;; (setq dap-lldb-debug-program '("/Library/Developer/CommandLineTools/usr/bin/lldb-dap"))
 
 (use-package treesit
   :config
@@ -416,7 +396,7 @@
 ;;         c-basic-offset 2))
 
 ;; Need vterm for claude-code below
-(use-package vterm :ensure t)
+;; (use-package vterm :ensure t)
 
 (use-package claude-code-ide
   :ensure t

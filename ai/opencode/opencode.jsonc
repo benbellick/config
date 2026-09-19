@@ -3,6 +3,12 @@
   "disabled_providers": ["opencode", "gitlab"],
   "share": "disabled",
   "instructions": ["~/config/ai/shared/AGENTS.md"],
+  "plugin": ["git@github.com:DataDog/opencode-datadog.git"],
+  "lsp": {
+    "gopls": {
+      "command": ["dd-gopls", "-remote=auto"]
+    }
+  },
   "permission": {
     "edit": "ask",
     "webfetch": "ask",
