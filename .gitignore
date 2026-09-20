@@ -16,6 +16,7 @@ ai/pi/npm/
 ai/pi/run-history.jsonl
 ai/pi/sessions/
 ai/pi/trust.json
+ai/pi/bin/
 
 # Claude local state
 ai/claude/file-history/
