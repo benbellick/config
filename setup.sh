@@ -30,7 +30,7 @@ link_config() {
 link_config "$config_dir/nvim" "$HOME/.config/nvim"
 link_config "$config_dir/.emacs" "$HOME/.emacs"
 link_config "$config_dir/.vimrc" "$HOME/.vimrc"
-link_config "$config_dir/ghostty/config.ghostty" "$HOME/.config/ghostty/config"
+link_config "$config_dir/ghostty/config" "$HOME/.config/ghostty/config"
 link_config "$config_dir/.zshrc" "$HOME/.zshrc"
 link_config "$config_dir/.gitconfig" "$HOME/.gitconfig"
 
