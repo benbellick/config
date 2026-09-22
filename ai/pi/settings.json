@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.86.1",
+  "lastChangelogVersion": "0.87.1",
   "defaultProvider": "ai-gw-openai",
   "defaultModel": "openai/gpt-6-sol",
   "defaultThinkingLevel": "medium",
@@ -16,5 +16,8 @@
     "extensions/*.ts"
   ],
   "theme": "light/dark",
-  "hideThinkingBlock": true
+  "hideThinkingBlock": true,
+  "terminal": {
+    "hyperlinks": true
+  }
 }
