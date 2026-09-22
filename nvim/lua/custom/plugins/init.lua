@@ -7,8 +7,13 @@
 ---@type LazySpec
 return {
   {
+    'dlyongemallo/diffview.nvim',
+    cmd = { 'DiffviewOpen', 'DiffviewClose', 'DiffviewFileHistory' },
+  },
+  {
     'tpope/vim-fugitive',
     cmd = { 'Git', 'GitReviewBranch' },
+    dependencies = { 'dlyongemallo/diffview.nvim' },
     keys = {
       { '<leader>gg', '<cmd>Git<cr>', desc = '[G]it status' },
       { '<leader>gb', '<cmd>Git blame<cr>', desc = '[G]it [B]lame' },
@@ -23,7 +28,7 @@ return {
           return
         end
 
-        vim.cmd('Git difftool -y ' .. merge_base)
+        vim.cmd('DiffviewOpen ' .. merge_base)
       end, { desc = 'Review branch changes from the merge base' })
     end,
   },
