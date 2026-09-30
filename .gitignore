@@ -4,6 +4,7 @@
 # Pi local/private state
 ai/pi/auth.json
 ai/pi/cache/
+ai/pi/mcp-auth.json
 ai/pi/mcp-cache.json
 ai/pi/mcp-npx-cache.json
 ai/pi/mcp-onboarding.json
