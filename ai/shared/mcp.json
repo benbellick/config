@@ -5,7 +5,10 @@
     },
     "atlassian": {
       "type": "http",
-      "url": "https://mcp.atlassian.com/v1/mcp"
+      "url": "https://mcp.atlassian.com/v1/mcp",
+      "oauth": {
+        "scope": "email offline_access read:account read:all:twg read:comment:confluence read:component:compass read:confluence-user read:event:compass read:hierarchical-content:confluence read:jira-work read:me read:metric:compass read:page:confluence read:scorecard:compass read:space:confluence search:confluence write:all:twg write:comment:confluence write:component:compass write:jira-work write:page:confluence write:scorecard:compass"
+      }
     },
     "ddci-mcp-prod": {
       "auth": "oauth",
