@@ -9,7 +9,8 @@
     "../../../dd/datadog-pi-packages/packages/refresh-models",
     "../../../dd/datadog-pi-packages/packages/session-cost",
     "npm:pi-markdown-preview",
-    "npm:pi-subagents"
+    "npm:pi-subagents",
+    "npm:pi-blackhole"
   ],
   "extensions": [
     "extensions/*.ts"
