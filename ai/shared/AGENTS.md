@@ -98,3 +98,4 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - PR descriptions should be concise, like a good commit message
 - Include a "Closes #ISSUE" reference when applicable (GitHub or Jira)
 - Avoid AI-style walls of text with excessive sections and bullet points
+- Never post a comment or reply on my behalf to a PR, issue, Jira ticket, or other external thread without asking first. Show me the exact text and wait for approval, even when a fix has already been pushed.
