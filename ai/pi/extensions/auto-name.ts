@@ -5,7 +5,7 @@ import {
 	type ExtensionAPI,
 	type ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
-import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
+import { sliceByColumn, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 
 type TextBlock = {
 	type?: string;
@@ -42,14 +42,18 @@ const interactiveModePrototype = InteractiveMode.prototype as typeof Interactive
 interactiveModePrototype[originalHandleNameCommandSymbol] ??= interactiveModePrototype.handleNameCommand;
 const originalHandleNameCommand = interactiveModePrototype[originalHandleNameCommandSymbol];
 
-const originalEditorRenderSymbol = Symbol.for("ben.pi.auto-name.originalEditorRender");
+const originalEditorTopBorderSymbol = Symbol.for("ben.pi.auto-name.originalEditorTopBorder");
+const previousEditorRenderSymbol = Symbol.for("ben.pi.auto-name.originalEditorRender");
 const customEditorPrototype = CustomEditor.prototype as typeof CustomEditor.prototype & {
-	[originalEditorRenderSymbol]?: (width: number) => string[];
-	render: (width: number) => string[];
+	[originalEditorTopBorderSymbol]?: (width: number, hiddenLineCount: number) => string;
+	[previousEditorRenderSymbol]?: (width: number) => string[];
 };
 
-customEditorPrototype[originalEditorRenderSymbol] ??= customEditorPrototype.render;
-const originalEditorRender = customEditorPrototype[originalEditorRenderSymbol];
+if (customEditorPrototype[previousEditorRenderSymbol]) {
+	customEditorPrototype.render = customEditorPrototype[previousEditorRenderSymbol];
+}
+customEditorPrototype[originalEditorTopBorderSymbol] ??= customEditorPrototype.renderTopBorder;
+const originalEditorTopBorder = customEditorPrototype[originalEditorTopBorderSymbol];
 
 const textParts = (content: unknown): string[] => {
 	if (typeof content === "string") {
@@ -108,13 +112,11 @@ const cleanName = (name: string): string => {
 
 const hyperlink = (text: string, url: string): string => `\x1b]8;;${url}\x07${text}\x1b]8;;\x07`;
 
-const sessionLabel = (name: string, attachments: SessionAttachments): string => {
+const sessionDisplayName = (name: string, attachments: SessionAttachments): string => {
 	const sanitizedName = name.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim();
-	const displayName = attachments.ticket
+	return attachments.ticket
 		? sanitizedName.replace(new RegExp(`^${attachments.ticket}\\s*[:|-]?\\s*`, "i"), "").trim() || sanitizedName
 		: sanitizedName;
-	const parts = [displayName, attachments.ticket, attachments.pr].filter(Boolean);
-	return `[${parts.join("|")}]`;
 };
 
 const linkSessionLabel = (label: string, attachments: SessionAttachments): string => {
@@ -128,12 +130,23 @@ const linkSessionLabel = (label: string, attachments: SessionAttachments): strin
 	return linkedLabel;
 };
 
-const sessionNameBorder = (name: string, attachments: SessionAttachments, width: number, color: (text: string) => string): string => {
-	const maxLabelWidth = Math.max(1, width - 4);
-	const truncatedLabel = truncateToWidth(sessionLabel(name, attachments), maxLabelWidth, "…");
-	const label = ` ${linkSessionLabel(truncatedLabel, attachments)} `;
-	const remainingWidth = Math.max(0, width - 1 - visibleWidth(label));
-	return color(`─${label}${"─".repeat(remainingWidth)}`);
+const sessionNameBorder = (
+	border: string,
+	name: string,
+	attachments: SessionAttachments,
+	width: number,
+	reservedLeftWidth: number,
+	color: (text: string) => string,
+): string => {
+	const references = [attachments.ticket, attachments.pr].filter(Boolean).join("|");
+	const maxNameWidth = width - reservedLeftWidth - visibleWidth(references) - 6;
+	if (maxNameWidth < 8) {
+		return border;
+	}
+
+	const truncatedName = truncateToWidth(sessionDisplayName(name, attachments), maxNameWidth, "…");
+	const rightLabel = ` [${linkSessionLabel([truncatedName, references].filter(Boolean).join("|"), attachments)}] `;
+	return sliceByColumn(border, 0, width - visibleWidth(rightLabel)) + color(rightLabel);
 };
 
 const runCommand = (command: string, cwd: string, args: string[], timeout: number): Promise<string | undefined> => {
@@ -245,15 +258,18 @@ export default function (pi: ExtensionAPI) {
 		currentContext = undefined;
 	});
 
-	customEditorPrototype.render = function (width: number) {
-		const lines = originalEditorRender.call(this, width);
-		if (!currentSessionName || lines.length === 0) {
-			return lines;
+	customEditorPrototype.renderTopBorder = function (width: number, hiddenLineCount: number) {
+		const border = originalEditorTopBorder.call(this, width, hiddenLineCount);
+		if (!currentSessionName || hiddenLineCount > 0) {
+			return border;
 		}
 
-		const editor = this as CustomEditor & { borderColor?: (text: string) => string };
-		const borderColor = editor.borderColor ?? ((text: string) => text);
-		return [sessionNameBorder(currentSessionName, currentAttachments, width, borderColor), ...lines.slice(1)];
+		const status = this.embedWorkingStatus && this.workingStatusIndicator
+			? this.workingStatusIndicator.renderInBorder(Math.max(1, width - 5))
+			: "";
+		const reservedLeftWidth = status ? visibleWidth(status) + 5 : 3;
+		const borderColor = this.borderColor ?? ((text: string) => text);
+		return sessionNameBorder(border, currentSessionName, currentAttachments, width, reservedLeftWidth, borderColor);
 	};
 
 	interactiveModePrototype.handleNameCommand = function (text: string) {
