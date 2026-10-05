@@ -53,6 +53,8 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Show code examples rather than lengthy descriptions
 - Ask questions when requirements are ambiguous
 - Don't over-explain obvious changes
+- Explain unfamiliar systems with one concrete example or execution-flow diagram before introducing additional abstractions
+- Treat requests to understand or troubleshoot as explanation-first. Explain the supported path and ask before introducing custom infrastructure or persistent workarounds
 
 ## Documentation and Writing Style
 
@@ -67,6 +69,8 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Read existing code before proposing changes
 - Make only the changes requested, avoid "improvements" beyond scope
 - No need for time estimates in plans
+- For large refactors, validate one minimal representative change before expanding. Keep scaffolding separate from migrations and unrelated cleanup
+- When autonomous work is authorized, continue to the agreed checkpoint. Stop for blockers, scope changes, or decisions outside that authorization
 
 ## File Operations
 
@@ -74,6 +78,8 @@ Comments which serve as docstrings are excellent. On the other hand, comments on
 - Only use heredocs when there's a good reason (e.g., complex shell scripts that need inline execution)
 
 # Version Control
+
+- Prefer the current checkout and ordinary Git commands. Ask before creating worktrees or introducing authentication/configuration workarounds
 
 ## Commits
 
