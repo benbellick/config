@@ -18,6 +18,8 @@ ai/pi/run-history.jsonl
 ai/pi/sessions/
 ai/pi/trust.json
 ai/pi/bin/
+ai/pi/pi-blackhole/*
+!ai/pi/pi-blackhole/pi-blackhole-config.json
 
 # Claude local state
 ai/claude/file-history/
