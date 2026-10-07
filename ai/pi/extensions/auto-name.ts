@@ -1,4 +1,3 @@
-import { execFile } from "node:child_process";
 import {
 	CustomEditor,
 	InteractiveMode,
@@ -22,16 +21,8 @@ type SessionEntry = {
 
 const MAX_CONVERSATION_CHARS = 12_000;
 
-type SessionAttachments = {
-	ticket?: string;
-	ticketUrl?: string;
-	pr?: string;
-	prUrl?: string;
-};
-
 let currentContext: ExtensionContext | undefined;
 let currentSessionName: string | undefined;
-let currentAttachments: SessionAttachments = {};
 
 const originalHandleNameCommandSymbol = Symbol.for("ben.pi.auto-name.originalHandleNameCommand");
 const interactiveModePrototype = InteractiveMode.prototype as typeof InteractiveMode.prototype & {
@@ -110,81 +101,22 @@ const cleanName = (name: string): string => {
 	return cleaned.length > 60 ? cleaned.slice(0, 57).trimEnd() + "..." : cleaned;
 };
 
-const hyperlink = (text: string, url: string): string => `\x1b]8;;${url}\x07${text}\x1b]8;;\x07`;
-
-const sessionDisplayName = (name: string, attachments: SessionAttachments): string => {
-	const sanitizedName = name.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim();
-	return attachments.ticket
-		? sanitizedName.replace(new RegExp(`^${attachments.ticket}\\s*[:|-]?\\s*`, "i"), "").trim() || sanitizedName
-		: sanitizedName;
-};
-
-const linkSessionLabel = (label: string, attachments: SessionAttachments): string => {
-	let linkedLabel = label;
-	if (attachments.ticket && attachments.ticketUrl) {
-		linkedLabel = linkedLabel.replace(attachments.ticket, hyperlink(attachments.ticket, attachments.ticketUrl));
-	}
-	if (attachments.pr && attachments.prUrl) {
-		linkedLabel = linkedLabel.replace(attachments.pr, hyperlink(attachments.pr, attachments.prUrl));
-	}
-	return linkedLabel;
-};
-
 const sessionNameBorder = (
 	border: string,
 	name: string,
-	attachments: SessionAttachments,
 	width: number,
 	reservedLeftWidth: number,
 	color: (text: string) => string,
 ): string => {
-	const references = [attachments.ticket, attachments.pr].filter(Boolean).join("|");
-	const maxNameWidth = width - reservedLeftWidth - visibleWidth(references) - 6;
+	const maxNameWidth = width - reservedLeftWidth - 6;
 	if (maxNameWidth < 8) {
 		return border;
 	}
 
-	const truncatedName = truncateToWidth(sessionDisplayName(name, attachments), maxNameWidth, "…");
-	const rightLabel = ` [${linkSessionLabel([truncatedName, references].filter(Boolean).join("|"), attachments)}] `;
+	const displayName = name.replace(/[\r\n\t]/g, " ").replace(/ +/g, " ").trim();
+	const truncatedName = truncateToWidth(displayName, maxNameWidth, "…");
+	const rightLabel = ` [${truncatedName}] `;
 	return sliceByColumn(border, 0, width - visibleWidth(rightLabel)) + color(rightLabel);
-};
-
-const runCommand = (command: string, cwd: string, args: string[], timeout: number): Promise<string | undefined> => {
-	return new Promise((resolve) => {
-		execFile(command, args, { cwd, timeout }, (error, stdout) => {
-			if (error) {
-				resolve(undefined);
-				return;
-			}
-			resolve(stdout.trim() || undefined);
-		});
-	});
-};
-
-const runGit = (cwd: string, args: string[]): Promise<string | undefined> => runCommand("git", cwd, args, 2_000);
-
-const runGh = (cwd: string, args: string[]): Promise<string | undefined> => runCommand("gh", cwd, args, 4_000);
-
-const ticketFromText = (text: string | undefined): string | undefined => {
-	const match = text?.match(/\b([A-Z][A-Z0-9]+-\d+)\b/i);
-	return match?.[1]?.toUpperCase();
-};
-
-const discoverAttachments = async (cwd: string, sessionName: string | undefined): Promise<SessionAttachments> => {
-	const branch = await runGit(cwd, ["branch", "--show-current"]);
-	const ticket = ticketFromText(sessionName) ?? ticketFromText(branch);
-	const prDetails = await runGh(cwd, ["pr", "view", "--json", "number,url", "--jq", "[.number, .url] | @tsv"]);
-	const [prNumber, prUrl] = prDetails?.split("\t") ?? [];
-	return {
-		ticket,
-		ticketUrl: ticket ? `https://datadoghq.atlassian.net/browse/${ticket}` : undefined,
-		pr: prNumber ? `PR #${prNumber}` : undefined,
-		prUrl,
-	};
-};
-
-const refreshAttachments = async (cwd: string) => {
-	currentAttachments = await discoverAttachments(cwd, currentSessionName);
 };
 
 const generateName = async (ctx: ExtensionContext): Promise<string> => {
@@ -243,15 +175,13 @@ const generateName = async (ctx: ExtensionContext): Promise<string> => {
 };
 
 export default function (pi: ExtensionAPI) {
-	pi.on("session_start", async (_event, ctx) => {
+	pi.on("session_start", (_event, ctx) => {
 		currentContext = ctx;
 		currentSessionName = pi.getSessionName();
-		currentAttachments = await discoverAttachments(ctx.cwd, currentSessionName);
 	});
 
-	pi.on("session_info_changed", (event, ctx) => {
+	pi.on("session_info_changed", (event) => {
 		currentSessionName = event.name;
-		void refreshAttachments(ctx.cwd);
 	});
 
 	pi.on("session_shutdown", () => {
@@ -269,7 +199,7 @@ export default function (pi: ExtensionAPI) {
 			: "";
 		const reservedLeftWidth = status ? visibleWidth(status) + 5 : 3;
 		const borderColor = this.borderColor ?? ((text: string) => text);
-		return sessionNameBorder(border, currentSessionName, currentAttachments, width, reservedLeftWidth, borderColor);
+		return sessionNameBorder(border, currentSessionName, width, reservedLeftWidth, borderColor);
 	};
 
 	interactiveModePrototype.handleNameCommand = function (text: string) {
