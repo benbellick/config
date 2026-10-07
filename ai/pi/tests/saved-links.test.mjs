@@ -74,12 +74,11 @@ test("bookmarks survive disk resume and compaction, and follow branch history", 
 	}
 });
 
-test("shortcut and command share a picker; URL filtering and Tab preserve the prompt", async () => {
+test("shortcut and command share a searchable boxed picker; Tab does not select a link", async () => {
 	const { ctx, call, extension, picker } = await setup();
 	await call({ action: "save", name: "design doc", url: "https://example.com/design" });
 	await call({ action: "save", name: "issue", url: "https://tracker.example.com/123" });
-	let prompt = "Read ";
-	ctx.ui.pasteToEditor = (url) => { prompt += url; };
+	ctx.ui.pasteToEditor = () => { throw new Error("Picker should not modify the prompt"); };
 	ctx.ui.custom = async (factory, options) => {
 		assert.equal(options.overlay, true);
 		let result;
@@ -93,13 +92,14 @@ test("shortcut and command share a picker; URL filtering and Tab preserve the pr
 			assert.ok(lines.slice(1, -1).every((line) => line.startsWith("│ ") && line.endsWith(" │")));
 			assert.ok(lines.every((line) => visibleWidth(line) === width));
 		}
+		assert.ok(!component.render(80).join("\n").includes("Tab insert URL"));
 		component.handleInput("\t");
-		assert.equal(result.action, "insert");
-		assert.equal(result.link.name, "issue");
-		return result;
+		assert.equal(result, undefined);
+		component.handleInput("\r");
+		assert.deepEqual(result, { name: "issue", url: "https://tracker.example.com/123" });
+		return undefined;
 	};
 	await picker();
-	assert.equal(prompt, "Read https://tracker.example.com/123");
 	await extension.commands.get("links").handler("", ctx);
 });
 
@@ -112,8 +112,7 @@ test("picker handles navigation, opening selection, empty search, and cancellati
 		const component = factory({ requestRender() {} }, theme, {}, (value) => { result = value; });
 		component.handleInput("\x1b[B");
 		component.handleInput("\r");
-		assert.equal(result.action, "open");
-		assert.equal(result.link.name, "two");
+		assert.deepEqual(result, { name: "two", url: "https://example.com/two" });
 		result = undefined;
 		component.handleInput("z");
 		component.handleInput("\t");

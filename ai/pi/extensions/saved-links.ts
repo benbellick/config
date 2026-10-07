@@ -4,7 +4,6 @@ import { Container, Input, Key, matchesKey, SelectList, Text, truncateToWidth, v
 import { Type } from "typebox";
 
 type SavedLink = { name: string; url: string };
-type PickerResult = { action: "open" | "insert"; link: SavedLink } | undefined;
 const ENTRY_TYPE = "ben.saved-links";
 
 function validateName(value: string | undefined): string {
@@ -57,7 +56,7 @@ async function showLinks(ctx: ExtensionContext): Promise<void> {
 		return;
 	}
 
-	const result = await ctx.ui.custom<PickerResult>((tui, theme, _keybindings, done) => {
+	const result = await ctx.ui.custom<SavedLink | undefined>((tui, theme, _keybindings, done) => {
 		const input = new Input({ prompt: "Search: " });
 		const container = new Container();
 		const listContainer = new Container();
@@ -73,7 +72,7 @@ async function showLinks(ctx: ExtensionContext): Promise<void> {
 			const query = input.getValue().toLowerCase();
 			const matches = links.filter((link) => `${link.name}\n${link.url}`.toLowerCase().includes(query));
 			list = new SelectList(matches.map((link) => ({ value: link.name, label: link.name, description: link.url })), 8, listTheme);
-			list.onSelect = (item) => done({ action: "open", link: links.find((link) => link.name === item.value)! });
+			list.onSelect = (item) => done(links.find((link) => link.name === item.value));
 			list.onCancel = () => done(undefined);
 			listContainer.clear();
 			listContainer.addChild(list);
@@ -82,7 +81,7 @@ async function showLinks(ctx: ExtensionContext): Promise<void> {
 		container.addChild(new Text(theme.fg("accent", theme.bold("Saved links")), 0, 0));
 		container.addChild(input);
 		container.addChild(listContainer);
-		container.addChild(new Text(theme.fg("dim", "↑↓ select · Enter open · Tab insert URL · Esc close"), 0, 0));
+		container.addChild(new Text(theme.fg("dim", "↑↓ select · Enter open · Esc close"), 0, 0));
 		return {
 			get focused() { return input.focused; },
 			set focused(value: boolean) { input.focused = value; },
@@ -99,10 +98,7 @@ async function showLinks(ctx: ExtensionContext): Promise<void> {
 			},
 			invalidate: () => container.invalidate(),
 			handleInput(data: string) {
-				if (matchesKey(data, Key.tab)) {
-					const selected = list.getSelectedItem();
-					if (selected) done({ action: "insert", link: links.find((link) => link.name === selected.value)! });
-				} else if ([Key.up, Key.down, Key.pageUp, Key.pageDown, Key.enter, Key.escape, Key.ctrl("c")].some((key) => matchesKey(data, key))) {
+				if ([Key.up, Key.down, Key.pageUp, Key.pageDown, Key.enter, Key.escape, Key.ctrl("c")].some((key) => matchesKey(data, key))) {
 					list.handleInput(data);
 				} else {
 					input.handleInput(data);
@@ -114,14 +110,10 @@ async function showLinks(ctx: ExtensionContext): Promise<void> {
 	}, { overlay: true, overlayOptions: { width: "80%", maxHeight: "80%" } });
 
 	if (!result) return;
-	if (result.action === "insert") {
-		ctx.ui.pasteToEditor(result.link.url);
-		return;
-	}
 	try {
-		await openUrl(result.link.url);
+		await openUrl(result.url);
 	} catch (error) {
-		ctx.ui.notify(`Could not open ${result.link.url}: ${error instanceof Error ? error.message : String(error)}`, "error");
+		ctx.ui.notify(`Could not open ${result.url}: ${error instanceof Error ? error.message : String(error)}`, "error");
 	}
 }
 
