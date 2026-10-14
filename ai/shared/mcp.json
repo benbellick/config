@@ -3,6 +3,9 @@
     "datadog-google-workspace": {
       "url": "https://google-workspace-mcp-server-834963730936.us-central1.run.app/mcp"
     },
+    "datadog-gmail": {
+      "url": "https://gmail-mcp-server-834963730936.us-central1.run.app/mcp"
+    },
     "atlassian": {
       "type": "http",
       "url": "https://mcp.atlassian.com/v1/mcp",
