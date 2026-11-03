@@ -282,8 +282,13 @@
   (dolist (var (car (read-from-string (shell-command-to-string "opam config env --sexp"))))
     (setenv (car var) (cadr var))))
 
+(use-package icomplete
+  :config
+  (fido-vertical-mode 1))
+
 (use-package company
   :straight t
+  :hook (agent-shell-mode . company-mode)
   :config (setq company-idle-delay 0.01))
 
 
@@ -422,7 +427,9 @@
 (use-package agent-shell
   :straight t
   :config
-  (setq agent-shell-anthropic-authentication
+  (setq agent-shell-preferred-agent-config 'pi
+        agent-shell-command-completion-enabled nil
+        agent-shell-anthropic-authentication
         (agent-shell-anthropic-make-authentication :login t)))
 
 ;; for eat terminal backend:
