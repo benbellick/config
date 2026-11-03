@@ -29,6 +29,7 @@ link_config() {
 
 link_config "$config_dir/nvim" "$HOME/.config/nvim"
 link_config "$config_dir/.emacs" "$HOME/.emacs"
+link_config "$config_dir/emacs/early-init.el" "$HOME/.emacs.d/early-init.el"
 link_config "$config_dir/.vimrc" "$HOME/.vimrc"
 link_config "$config_dir/ghostty/config" "$HOME/.config/ghostty/config"
 link_config "$config_dir/herdr/config.toml" "$HOME/.config/herdr/config.toml"

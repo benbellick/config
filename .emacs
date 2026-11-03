@@ -2,9 +2,21 @@
 (setq custom-file (concat user-emacs-directory "custom.el"))
 (when (file-exists-p custom-file)
   (load custom-file))
-(require 'package)
-(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el"
+                         user-emacs-directory))
+      (bootstrap-version 7))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+(require 'use-package)
 
 ;; My experimental packages
 (add-to-list 'load-path "~/config/emacs/packages")
@@ -67,7 +79,7 @@
 
 
 (use-package ef-themes
-  :ensure t
+  :straight t
   :config
   (modus-themes-load-theme 'ef-cyprus))
 
@@ -119,7 +131,6 @@
   :hook (text-mode . turn-on-visual-line-mode))
 
 (use-package smerge-mode
-  :ensure t
   :init
   (setq smerge-command-prefix (kbd "C-c v")))
 
@@ -129,7 +140,7 @@
 	 ("M-s" . flymake-show-project-diagnostics)))
 
 (use-package magit
-  :ensure t
+  :straight t
   :config
   (put 'magit-refs-sections-hook 'safe-local-variable 'listp)
   (put 'magit-status-headers-hook 'safe-local-variable 'listp)
@@ -137,7 +148,7 @@
   (setq magit-diff-refine-hunk t))
 
 (use-package git-link
-  :ensure t
+  :straight t
   :config
   (setq git-link-open-in-browser t))
 
@@ -145,28 +156,28 @@
   ;; :after magit)
 
 (use-package hl-todo
-  :ensure t
+  :straight t
   :hook ((prog-mode . hl-todo-mode)))
 
 
 (use-package markdown-mode
-  :ensure t
+  :straight t
   :config
     (setq markdown-fontify-code-blocks-natively t)) ; syntax highlight codeblocks
 
 (use-package antlr-mode
-  :ensure t
+  :straight t
   :mode "\\.g4\\'")
 
 (use-package haskell-mode
-  :ensure t
+  :straight t
   :config
     (setq haskell-font-lock-symbols t
 	  haskell-tags-on-save t
 	  haskell-process-log t))
 
 ;; (use-package elpy
-;;   :ensure t
+;;   :straight t
 ;;   :init
 ;;   (elpy-enable)
 ;;   :config
@@ -181,7 +192,6 @@
 	
 (use-package org
   :hook (org-mode . org-indent-mode)
-  :ensure org-bullets
   :config (setq org-preview-latex-default-process 'dvisvgm
 		org-format-latex-options (plist-put org-format-latex-options :scale 3.0)
 		org-open-link-functions nil ;; don't use ctags
@@ -204,7 +214,8 @@
   (add-to-list 'org-latex-packages-alist '("" "tikz" t))
   :bind ("C-c l" . 'org-store-link))
 
-(use-package org-bullets)
+(use-package org-bullets
+  :straight t)
 
 ;; Setup compilation mode
 (use-package compile
@@ -222,11 +233,11 @@
 (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (use-package pdf-tools
-  :ensure t
+  :straight t
   :config (pdf-tools-install))
 
 (use-package tex
-  :ensure auctex
+  :straight auctex
   :requires pdf-tools
   :config
     (setq TeX-view-program-selection
@@ -236,13 +247,13 @@
 	  exec-path (append exec-path '("/Library/TeX/texbin/"))))
 
 (use-package ocamlformat
-  :ensure t
+  :straight t
   :config
     (setq ocamlformat-show-errors 'echo))
 
 (use-package tuareg
   :requires ocamlformat
-  :ensure t
+  :straight t
   :config
     (setq tuareg-prettify-symbols-full t)
     (defun opam-env ()
@@ -255,10 +266,10 @@
     (tuareg-mode . (lambda() (setq compile-command "dune build"))))
 
 ;; (use-package ocp-indent
-;;   :ensure t)
+;;   :straight t)
 
 (use-package utop
-  :ensure t
+  :straight t
   :config
     (setq utop-command "opam exec -- dune utop . -- -emacs")
   :hook
@@ -272,7 +283,7 @@
     (setenv (car var) (cadr var))))
 
 (use-package company
-  :ensure t
+  :straight t
   :config (setq company-idle-delay 0.01))
 
 
@@ -304,17 +315,17 @@
 
 ;; special java handling for eglot
 (use-package eglot-java
-  :ensure t
+  :straight t
   :after eglot)
 
 (use-package jarchive
-  :ensure t
+  :straight t
   :after eglot
   :config
   (jarchive-setup))
 
 (use-package yasnippet                 
-  :ensure t
+  :straight t
   :config
   (setq yas-snippet-dirs (append yas-snippet-dirs
 				 '("~/config/emacs/snippets")))
@@ -324,7 +335,7 @@
 (use-package auth-source)
 
 (use-package gptel
-  :ensure t
+  :straight t
   :config
   (gptel-make-anthropic "Claude"
     :stream t
@@ -334,16 +345,16 @@
   :after gptel)
 
 (use-package nix-mode
-  :ensure t)
+  :straight t)
 
 (use-package yaml-mode
-  :ensure t)
+  :straight t)
 
 (use-package dockerfile-mode
-  :ensure t)
+  :straight t)
 
 (use-package terraform-mode
-  :ensure t)
+  :straight t)
 
 (defun copy-buffer ()
   (interactive)
@@ -352,7 +363,7 @@
 
 (global-set-key (kbd "C-x M-w") 'copy-buffer)
 (use-package kubernetes
-    :ensure t)
+    :straight t)
 
 
 ;; (require 'dap-lldb)
@@ -366,16 +377,16 @@
 
 
 (use-package rg
-  :ensure t)
+  :straight t)
 
 (use-package protobuf-mode
-  :ensure t
+  :straight t
   :mode ("\\.proto\\'" . protobuf-mode))
 
 
 
 (use-package dap-mode
-  :ensure t
+  :straight t
   :after lsp-mode
   :config
   (dap-mode 1)
@@ -383,7 +394,7 @@
   (require 'dap-lldb)) 
 
 (use-package editorconfig
-  :ensure t
+  :straight t
   :config (editorconfig-mode 1))
 
 ;; (use-package lsp-java
@@ -396,43 +407,43 @@
 ;;         c-basic-offset 2))
 
 (use-package twen-twen-tw
-  :ensure t
-  :vc (:url "git@github.com:benbellick/twen-twen-tw.el.git" :rev :newest)
+  :straight (:type git :host github :repo "benbellick/twen-twen-tw.el"
+             :protocol ssh)
   :config
   (twen-twen-tw-mode 1))
 
 (use-package tree-sitter-langs
-  :ensure t)
+  :straight t)
 (tree-sitter-require 'typescript)
 
 (use-package shell-maker
-  :ensure t)
+  :straight t)
 
 (use-package agent-shell
-  :ensure t
+  :straight t
   :config
   (setq agent-shell-anthropic-authentication
         (agent-shell-anthropic-make-authentication :login t)))
 
 ;; for eat terminal backend:
-(use-package eat :ensure t)
+(use-package eat :straight t)
 
 (use-package ghostel
-  :ensure t)
+  :straight t)
 
 (use-package just-mode
-  :ensure t)
+  :straight t)
 
 (use-package justl
-  :ensure t)
+  :straight t)
 
 ;; This MUST be the last item in the list
 (use-package envrc
-  :ensure t
+  :straight t
   :hook (after-init . envrc-global-mode))
 
 (use-package org-present
-  :ensure t
+  :straight t
   :hook
   ((org-present-mode . (lambda ()
                          (org-present-big)
