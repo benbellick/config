@@ -1,57 +1,20 @@
 ---
 name: review-pr-subagent
-description: Review a GitHub pull request, especially an open-source contribution, by delegating context gathering and checking correctness, API documentation, simplicity, comments, tests, and scope.
+description: Review one GitHub pull request with a top-down code walk, short prioritized findings, and a challenger pass.
 ---
 
-# Review a GitHub PR
+Review exactly one pull request for Ben Bellick: $ARGUMENTS. Review only this PR. If no PR is specified, use the PR for the current branch.
 
-## Workflow
+First check its size (additions plus deletions). If it is over about 800 changed lines, say so in your first reply and ask Ben whether to continue on this model or restart on a stronger one; otherwise carry on.
 
-1. Resolve the target:
-   - A bare number means that PR in the current repository.
-   - A URL identifies its own repository and PR.
-   - With no target, use the PR for the current branch.
-2. Delegate the review to the `reviewer` subagent with fresh context and the task below. Do not gather context in the parent unless the target is ambiguous.
-3. Return a concise summary that preserves every substantive finding.
+Read the PR description, full diff, review comments, and CI state. Focus on system risks (behavior changes, rollout and rollback, performance, security and authorization, compatibility), code hygiene, and correctness. Use the repo's real code at the PR head to verify claims, not only the diff.
 
-Never edit files or modify GitHub state. Do not post comments or reviews, approve, request changes, merge, or push.
+Explain the change through a code walk. Start at the highest relevant entry point and follow the call hierarchy, not the order of the file. Show composite functions that establish the overall flow before descending into their atomic building blocks. Show actual code snippets grouped into logical steps, each with one to three sentences explaining what it does and why. For non-obvious inner calls, briefly show or describe what they do. Separate steps with `---`. This is not just a summary; show the code, and keep the prose concise.
 
-## Reviewer Task
+After a first pass, have a challenger agent challenge your findings. Try GLM first; if unavailable or unreachable, try Kimi, then Claude Sonnet. Name the model used and settle disagreements yourself, dropping findings that don't hold up.
 
-```text
-Review this GitHub pull request. Gather all context yourself and return review feedback only.
+Label each comment P1, P2, or P3. Comments must be SHORT. Use one to three plain sentences, one point per comment, no essays, long lists, or AI-speak. Skip nits and speculation.
 
-PR target: <number, URL, or current branch PR>
+Show everything in this session, with no Markdown report file. Start with a brief summary of what the PR does, then the code walk, then comments in severity order with their file, line, and the code they refer to. End with a verdict stating whether there are blockers and anything you could not verify.
 
-A bare number refers to the current repository. A URL identifies its own repository. With no target, discover the current branch's PR.
-
-Investigation:
-- Run `gh pr checkout <pr-num>` before reviewing so the local worktree contains the PR's code. Never discard or overwrite existing local changes to do this.
-- Use read-only `gh` and `git` commands to inspect PR metadata, description, commits, changed files, diff, base branch, and review status.
-- Inspect surrounding repository code when the patch alone is insufficient.
-- Find and read linked issues or tickets when accessible.
-- Check that the implementation matches the PR description and linked requirements.
-
-Review standards:
-- Find correctness bugs, regressions, risky behavior, and missed edge cases.
-- Check that public APIs document non-obvious intent and contracts. Do not require docstrings that merely restate names or signatures.
-- Code should be as simple as reasonably possible. Look for existing APIs and established patterns before accepting new machinery. Flag unnecessary complexity; accept essential complexity only when its purpose or justification is clear.
-- Non-obvious logic should have concise explanatory comments. Straightforward code should not be narrated with comments.
-- Tests should cover changed behavior, important edge cases, and regressions while remaining easy to understand. Prefer a small set of discriminating cases over duplicate or incidental tests. Suggest a clearer structure for hard-to-read tests, or explain why their complexity is unavoidable.
-- Check whether the implementation fulfills the linked requirements and whether the PR title and description accurately describe what it delivers.
-- The PR should contain one coherent change. Flag unrelated refactors, cleanup, or behavior changes that should be separate.
-- When relevant, consider rollout safety, staging and feature flags, affected services, and whether another domain owner should review the change.
-- Separate issues that must be resolved before merging from reasonable follow-ups. Do not block a focused improvement on unrelated pre-existing problems; suggest tracking follow-ups when useful.
-- Treat maintainability concerns as substantive, but do not nitpick personal style.
-
-Safety:
-- Do not edit files.
-- Use GitHub only for read-only investigation. Never post comments or reviews, approve, request changes, merge, push, or otherwise modify GitHub state.
-
-Output:
-- Start with a one-sentence verdict.
-- Group findings by severity.
-- Give each finding actionable evidence with file and line references when possible, plus the smallest reasonable fix. Make clear which findings block merging and which can be follow-ups.
-- State uncertainty and limits of the review honestly. Be appreciative and specific without softening substantive concerns.
-- If there are no substantive findings, say so and mention any residual risk from inaccessible context.
-```
+Do not edit source code or disturb the current checkout. Do NOT post anything to the PR or anywhere else. No review, inline comment, approval, reaction, or summary. Wait for Ben's explicit approval of the text before posting, and then post only on this PR. Keep context small, and don't sleep or poll.
