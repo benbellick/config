@@ -1,7 +1,10 @@
 {
   "mcpServers": {
     "datadog-google-workspace": {
-      "url": "https://google-workspace-mcp-server-834963730936.us-central1.run.app/mcp"
+      "url": "https://google-workspace-mcp-server-834963730936.us-central1.run.app/mcp",
+      "oauth": {
+        "callbackUrl": "http://localhost:60720/callback"
+      }
     },
     "datadog-gmail": {
       "url": "https://gmail-mcp-server-834963730936.us-central1.run.app/mcp"
