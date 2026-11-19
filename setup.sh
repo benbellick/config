@@ -35,6 +35,7 @@ link_config "$config_dir/ghostty/config" "$HOME/.config/ghostty/config"
 link_config "$config_dir/herdr/config.toml" "$HOME/.config/herdr/config.toml"
 link_config "$config_dir/.zshrc" "$HOME/.zshrc"
 link_config "$config_dir/.gitconfig" "$HOME/.gitconfig"
+link_config "$config_dir/.taskrc" "$HOME/.taskrc"
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
   link_config "$config_dir/.aerospace.toml" "$HOME/.aerospace.toml"
