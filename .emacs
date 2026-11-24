@@ -119,6 +119,10 @@
 	 ("C-x p j" . justl-in-project)
 	 ("C-x p J" . justl-list-in-project)))
 
+(use-package consult
+  :straight t
+  :bind ("C-x p f" . consult-fd))
+
 (use-package project-recipe
   :after project
   :bind ("C-x p t" . project-compile-recipe))
